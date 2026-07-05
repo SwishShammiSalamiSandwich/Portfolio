@@ -181,9 +181,10 @@
 
   /* ================= INTRO ================= */
   .intro-grid{
-    display:grid; grid-template-columns:1.2fr 1fr; gap:60px; align-items:start;
+    display:grid; grid-template-columns:1.2fr 1fr; gap:60px;
   }
-  @media (max-width:860px){ .intro-grid{grid-template-columns:1fr;} }
+  .intro-video-wrap { position: relative; }
+  @media (max-width:860px){ .intro-grid{grid-template-columns:1fr;} .intro-video-wrap { min-height: 350px; } }
   .intro-lead{font-size:clamp(20px,2.6vw,28px); line-height:1.5; color:var(--paper); font-weight:500;}
   .intro-lead .signal{color:var(--signal);}
   .intro-stats{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
@@ -412,8 +413,8 @@
         <div class="label">Thesis</div>
         <p class="intro-lead">I treat generative AI as a compressor, not a replacement — it collapses the part of making something that used to cost weeks of artist time down to hours, so I can spend mine on <span class="signal">taste, culture, and judgment</span> instead of first drafts. That's the thread through the storyboards, brand systems, and stage visuals below, including six months proving it at scale inside Jio Creative Labs.</p>
       </div>
-      <div>
-        <video src="assets/dog.mp4" autoplay loop muted playsinline style="max-width:100%; width:auto; max-height:340px; border-radius:8px; border:1px solid var(--line);"></video>
+      <div class="intro-video-wrap">
+        <video src="assets/dog.mp4" autoplay loop muted playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid var(--line);"></video>
       </div>
     </div>
   </div>
