@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swayam Srivastav — Creative Technologist</title>
+<title>Swayam Srivastav — Creative Technologist &amp; Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -18,9 +18,9 @@
     --line:#2a2a28;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; background:var(--ink);}
   body{
-    background:var(--ink);
+    background:transparent;
     color:var(--paper);
     font-family:'Inter',sans-serif;
     overflow-x:hidden;
@@ -35,6 +35,12 @@
     pointer-events:none;
     opacity:.05;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* --- reactive tracking-grid background: a viewfinder feed under the page --- */
+  #bgCanvas{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    display:block;
   }
 
   .display{font-family:'Bebas Neue', sans-serif; letter-spacing:.01em;}
@@ -114,7 +120,8 @@
     letter-spacing:.005em;
     color:var(--paper);
   }
-  .hero h1 span{color:var(--signal);}
+  .hero h1 .hletter{color:var(--paper); transition:color 1.1s ease;}
+  .hero h1 .hletter.lit{color:var(--signal);}
   .hero-sub{
     max-width:640px; margin-top:28px;
     font-size:clamp(16px,2vw,19px); line-height:1.6;
@@ -132,26 +139,31 @@
     color:var(--dim); display:flex; align-items:center; gap:10px;
   }
 
-  /* --- id photo --- */
-  .id-photo{
-    position:absolute; top:130px; right:32px;
-    width:132px; text-align:center;
+  /* --- custom dynamic hero background --- */
+  .hero-bg{position:absolute; inset:0; z-index:-1; overflow:hidden; background:var(--ink);}
+  .hero-bg-fallback{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 22% 24%, rgba(228,68,46,.16), transparent 55%),
+      radial-gradient(circle at 78% 74%, rgba(228,68,46,.10), transparent 50%),
+      linear-gradient(160deg, #17201d, #0b0b0c 70%);
+    background-size:180% 180%;
+    animation:heroFallbackDrift 18s ease-in-out infinite alternate;
   }
-  .id-photo .frame{
-    width:132px; height:132px; border:1px solid var(--signal);
-    padding:6px; position:relative;
+  .hero-bg-inner{position:absolute; inset:-6%; transition:transform .5s ease-out; will-change:transform;}
+  .hero-bg-inner img, .hero-bg-inner video{
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:grayscale(.4) contrast(1.1) brightness(.72);
+    animation:heroBgDrift 22s ease-in-out infinite alternate;
   }
-  .id-photo img{
-    width:100%; height:100%; object-fit:cover;
-    filter:grayscale(.55) contrast(1.08) brightness(.96);
-    display:block;
+  .hero-bg-overlay{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(11,11,12,.42) 0%, rgba(11,11,12,.66) 55%, rgba(11,11,12,.94) 100%),
+      radial-gradient(120% 100% at 12% 28%, rgba(11,11,12,0) 0%, rgba(11,11,12,.4) 65%);
   }
-  .id-photo .tag{
-    margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:9.5px;
-    letter-spacing:.14em; color:var(--dim);
-  }
-  .id-photo .tag b{display:block; color:var(--signal); font-size:10px;}
-  @media (max-width:760px){ .id-photo{display:none;} }
+  @keyframes heroFallbackDrift{from{background-position:0% 0%;}to{background-position:100% 100%;}}
+  @keyframes heroBgDrift{from{transform:scale(1.04) translate(0,0);}to{transform:scale(1.12) translate(-1.5%,-1.5%);}}
   .scroll-cue .bar{width:1px; height:34px; background:linear-gradient(var(--signal), transparent); animation:drop 1.8s infinite;}
   @keyframes drop{0%{transform:scaleY(0); transform-origin:top;}50%{transform:scaleY(1); transform-origin:top;}50.01%{transform-origin:bottom;}100%{transform:scaleY(0); transform-origin:bottom;}}
 
@@ -169,9 +181,8 @@
 
   /* ================= INTRO ================= */
   .intro-grid{
-    display:grid; grid-template-columns:1.2fr 1fr; gap:60px; align-items:start;
+    display:grid; grid-template-columns:1fr; max-width:900px; gap:60px; align-items:start;
   }
-  @media (max-width:860px){ .intro-grid{grid-template-columns:1fr;} }
   .intro-lead{font-size:clamp(20px,2.6vw,28px); line-height:1.5; color:var(--paper); font-weight:500;}
   .intro-lead .signal{color:var(--signal);}
   .intro-stats{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
@@ -319,37 +330,72 @@
   }
   .foot-bottom{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-top:80px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.06em;}
 
+  /* ================= SCROLL REVEAL ================= */
+  .reveal{
+    opacity:0; transform:translateY(28px);
+    transition:opacity .8s cubic-bezier(.16,.84,.44,1), transform .8s cubic-bezier(.16,.84,.44,1);
+    will-change:opacity, transform;
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  /* ================= HERO ENTRANCE ================= */
+  .hero-bg{opacity:0; animation:heroBgFadeIn 1.4s ease forwards;}
+  @keyframes heroBgFadeIn{to{opacity:1;}}
+  .hero-eyebrow, .hero h1, .hero-sub, .hero-meta, .scroll-cue{
+    opacity:0; transform:translateY(20px);
+    animation:heroIn .9s cubic-bezier(.16,.84,.44,1) forwards;
+  }
+  .hero-eyebrow{animation-delay:.05s;}
+  .hero h1{animation-delay:.16s;}
+  .hero-sub{animation-delay:.32s;}
+  .hero-meta{animation-delay:.46s;}
+  .scroll-cue{animation-delay:.6s;}
+  @keyframes heroIn{to{opacity:1; transform:translateY(0);}}
+
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important; transition:none !important;}
+    .reveal, .hero-eyebrow, .hero h1, .hero-sub, .hero-meta, .scroll-cue, .hero-bg{
+      opacity:1 !important; transform:none !important;
+    }
   }
 </style>
 </head>
 <body>
 
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
 <div class="progress" id="progress"></div>
 <div class="rec-hud"><span class="rec-dot"></span><span class="mono" id="hud-clock">00:00:00:00</span><span>&nbsp;REC</span></div>
 
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="hero-frame"></div>
-  <span class="hero-corner tl mono">JCL / 2026</span>
+  <span class="hero-corner tl mono">MAKER LOG / 2026</span>
   <span class="hero-corner tr mono">MUMBAI, IN</span>
-  <span class="hero-corner bl mono">AI INTEGRATION — M&amp;E</span>
+  <span class="hero-corner bl mono">CREATE / DIRECT / BUILD</span>
   <span class="hero-corner br mono">REEL 01</span>
 
-  <div class="id-photo">
-    <div class="frame"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAJ+AoADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD4yooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//2Q==" alt="Swayam Srivastav"></div>
-    <div class="tag"><b>SUBJECT</b>SWAYAM SRIVASTAV</div>
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-bg-fallback"></div>
+    <div class="hero-bg-inner">
+      <!-- Drop your own clip at assets/hero-bg.mp4 (or update the source below) -- it will
+           replace this generated backdrop automatically once it loads. -->
+      <video autoplay muted loop playsinline preload="auto" onerror="this.remove()">
+        <source src="assets/hero-bg.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-bg-overlay"></div>
   </div>
 
   <div class="wrap">
-    <div class="hero-eyebrow">Creative Technologist — Generative AI for Film, Brand &amp; Live Events</div>
-    <h1>SWAYAM<br>SRIVAST<span>A</span>V</h1>
-    <p class="hero-sub">Six months inside Jio Creative Labs — turning scripts into storyboards, brands into campaigns, and a Bhakti concert into a fully AI-directed stage. Generative AI as the pre-production engine; human judgment as the brand's last line of defense.</p>
+    <div class="hero-eyebrow">Creative Technologist &amp; Maker — Story, Visuals, Systems</div>
+    <h1 aria-label="Swayam Srivastav">
+      <span aria-hidden="true"><span class="hletter">S</span><span class="hletter">W</span><span class="hletter">A</span><span class="hletter">Y</span><span class="hletter">A</span><span class="hletter">M</span><br><span class="hletter">S</span><span class="hletter">R</span><span class="hletter">I</span><span class="hletter">V</span><span class="hletter">A</span><span class="hletter">S</span><span class="hletter">T</span><span class="hletter lit">A</span><span class="hletter">V</span></span>
+    </h1>
+    <p class="hero-sub">A maker at heart — I build things across storyboards, brand systems, stage visuals, and short-form film, treating generative AI as a tool in the process, not the point of it. Most recently, that meant six months at Jio Creative Labs turning scripts into storyboards, brands into campaigns, and a live concert into a fully AI-directed stage.</p>
     <div class="hero-meta">
-      <div>ROLE<strong>Creative &amp; AI Production Intern</strong></div>
-      <div>AGENCY<strong>Jio Creative Labs, Mumbai</strong></div>
-      <div>DURATION<strong>Jan — Jun 2026</strong></div>
+      <div>ROLE<strong>Creative Technologist &amp; Maker</strong></div>
+      <div>FOCUS<strong>Film, Brand Systems, Live Events, AI Pipelines</strong></div>
+      <div>EXPERIENCE<strong>Jio Creative Labs, Mumbai (Jan–Jun 2026)</strong></div>
       <div>DEGREE<strong>B.Tech E&amp;C, MIT Manipal ('22–'26)</strong></div>
     </div>
   </div>
@@ -363,13 +409,7 @@
     <div class="intro-grid">
       <div>
         <div class="label">Thesis</div>
-        <p class="intro-lead">Generative AI didn't replace anyone in this story. It <span class="signal">compressed the pre-production process</span> — the part that used to cost an agency weeks of artist time — down to hours, so the people in the room could spend their energy on taste, culture, and judgment instead of first drafts.</p>
-      </div>
-      <div class="intro-stats">
-        <div class="stat"><b>64</b><span>SHOTS STORYBOARDED FOR A FEATURE FILM</span></div>
-        <div class="stat"><b>6</b><span>MONTHS, JAN — JUN 2026</span></div>
-        <div class="stat"><b>3</b><span>BRAND CAMPAIGNS DELIVERED</span></div>
-        <div class="stat"><b>1</b><span>LIVE CONCERT ART-DIRECTED SOLO</span></div>
+        <p class="intro-lead">I treat generative AI as a compressor, not a replacement — it collapses the part of making something that used to cost weeks of artist time down to hours, so I can spend mine on <span class="signal">taste, culture, and judgment</span> instead of first drafts. That's the thread through the storyboards, brand systems, and stage visuals below, including six months proving it at scale inside Jio Creative Labs.</p>
       </div>
     </div>
   </div>
@@ -399,7 +439,7 @@
 <section class="sec">
   <div class="wrap">
     <div class="sec-head">
-      <div class="label">Progression — Jio Creative Labs</div>
+      <div class="label">Case Study — Jio Creative Labs</div>
       <h2 class="sec-title">From <em>generating shots</em> to <em>directing an event.</em></h2>
       <p class="sec-desc">Ownership grew month over month — from supporting an existing production to independently leading the AI-assisted creative direction of a large-scale live concert.</p>
     </div>
@@ -742,6 +782,155 @@
     requestAnimationFrame(tick);
   }
   tick();
+
+  // ============ REACTIVE TRACKING-GRID BACKGROUND ============
+  // A quiet nod to the REC / viewfinder motif: a dot grid that behaves like
+  // a camera's focus points, drifting alive under the cursor.
+  (function(){
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const spacing = 44;
+    let w, h, dpr, dots = [];
+    const mouse = { x:-9999, y:-9999 };
+
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth; h = window.innerHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildDots();
+    }
+    function buildDots(){
+      dots = [];
+      const cols = Math.ceil(w / spacing) + 1;
+      const rows = Math.ceil(h / spacing) + 1;
+      for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+          dots.push({ ox:i*spacing, oy:j*spacing, x:i*spacing, y:j*spacing });
+        }
+      }
+    }
+    function draw(){
+      ctx.clearRect(0, 0, w, h);
+      if(mouse.x > -500){
+        const glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 280);
+        glow.addColorStop(0, 'rgba(228,68,46,0.09)');
+        glow.addColorStop(1, 'rgba(228,68,46,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, w, h);
+      }
+      for(const d of dots){
+        const dx = d.ox - mouse.x, dy = d.oy - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const force = Math.max(0, 1 - dist / 190);
+        if(force > 0){
+          const angle = Math.atan2(dy, dx);
+          d.x = d.ox + Math.cos(angle) * force * 13;
+          d.y = d.oy + Math.sin(angle) * force * 13;
+        } else {
+          d.x = d.ox; d.y = d.oy;
+        }
+        const alpha = 0.075 + force * 0.5;
+        const r = 1 + force * 1.7;
+        ctx.beginPath();
+        ctx.fillStyle = force > 0.6 ? `rgba(228,68,46,${Math.min(alpha,0.85)})` : `rgba(241,239,233,${alpha})`;
+        ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if(!reduceMotion) requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    window.addEventListener('touchmove', e => {
+      if(e.touches && e.touches[0]){ mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; }
+    }, { passive:true });
+
+    resize();
+    draw();
+  })();
+
+  // ============ SCROLL-TRIGGERED REVEALS ============
+  (function(){
+    const targets = document.querySelectorAll(
+      '.sec-head, .intro-lead, .intro-stats, .work-card, .t-row, .quote-card, .outcome, .g-tile, .spotlight, .foot-cta, .marquee-wrap'
+    );
+    targets.forEach((el, i) => {
+      el.classList.add('reveal');
+      el.style.transitionDelay = ((i % 5) * 70) + 'ms';
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('in-view', entry.isIntersecting);
+      });
+    }, { threshold:0.12, rootMargin:'0px 0px -60px 0px' });
+    targets.forEach(el => io.observe(el));
+  })();
+
+  // ============ HERO BACKGROUND CURSOR PARALLAX ============
+  (function(){
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const inner = document.querySelector('.hero-bg-inner');
+    const video = document.querySelector('.hero-bg-inner video');
+    if(video && reduceMotion){
+      video.removeAttribute('autoplay');
+      video.pause();
+    }
+    if(!inner || reduceMotion) return;
+    window.addEventListener('mousemove', e => {
+      const nx = e.clientX / window.innerWidth - 0.5;
+      const ny = e.clientY / window.innerHeight - 0.5;
+      inner.style.transform = `translate(${nx * -18}px, ${ny * -14}px)`;
+    }, { passive:true });
+  })();
+
+  // ============ NAME LETTER FLICKER ============
+  // Random letters in the hero name drift to signal-orange and fade back to white.
+  (function(){
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const letters = document.querySelectorAll('.hero h1 .hletter');
+    if(!letters.length || reduceMotion) return;
+    function pulse(){
+      const count = 1 + Math.floor(Math.random() * 2);
+      const chosen = new Set();
+      let guard = 0;
+      while(chosen.size < count && guard < 20){
+        chosen.add(Math.floor(Math.random() * letters.length));
+        guard++;
+      }
+      chosen.forEach(i => {
+        const el = letters[i];
+        el.classList.add('lit');
+        setTimeout(() => el.classList.remove('lit'), 500 + Math.random() * 900);
+      });
+      setTimeout(pulse, 350 + Math.random() * 650);
+    }
+    pulse();
+  })();
+
+  // ============ HERO PARALLAX ON SCROLL ============
+  (function(){
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion) return;
+    const hero = document.querySelector('.hero');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const vh = window.innerHeight;
+        if(y < vh){
+          hero.style.transform = `translateY(${y * 0.16}px)`;
+          hero.style.opacity = String(Math.max(0, 1 - y / (vh * 0.85)));
+        }
+        ticking = false;
+      });
+    }, { passive:true });
+  })();
 </script>
 </body>
 </html>
