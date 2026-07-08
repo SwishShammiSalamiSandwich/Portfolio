@@ -289,6 +289,7 @@
     transition:transform .6s ease, filter .4s ease;
   }
   .g-tile:hover img{transform:scale(1.06); filter:grayscale(0) contrast(1.05);}
+  .g-tile:hover .hover-overlay{opacity:1 !important;}
   .g-placeholder{
     position:absolute; inset:0; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:10px;
@@ -671,11 +672,12 @@
         <div class="g-caption"><b>Hyphen Skincare</b><span>BRAND POSITIONING</span></div>
       </div>
 
-      <div class="g-tile" data-caption="Music Video" data-tagline="ON-SET / STILL">
-        <img src="assets/music-video-still.jpg" alt="Music video production still" onerror="this.remove()">
-        <div class="g-placeholder"><div class="plus">＋</div><span>MUSIC-VIDEO-STILL.JPG<br>Production still</span></div>
+      <a href="https://www.youtube.com/watch?v=pfsxUl7KYdc" target="_blank" class="g-tile no-lightbox" data-caption="Music Video" data-tagline="ON-SET / STILL" style="display:block; text-decoration:none;">
+        <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()">
+        <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2;">CLICK TO WATCH</div>
+        <div class="g-placeholder"><div class="plus">＋</div><span>MUSIC-VIDEO.PNG<br>Production still</span></div>
         <div class="g-caption"><b>Music Video</b><span>ON-SET / STILL</span></div>
-      </div>
+      </a>
     </div>
   </div>
 </section>
@@ -814,7 +816,8 @@
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   document.querySelectorAll('.g-tile').forEach(tile => {
-    tile.addEventListener('click', () => {
+    tile.addEventListener('click', (e) => {
+      if(tile.classList.contains('no-lightbox')) return;
       const img = tile.querySelector('img');
       if(!img) return; // placeholder tile, nothing to expand yet
       lightboxImg.src = img.src;
