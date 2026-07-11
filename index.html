@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-scroll">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,7 +86,7 @@
   .label::before{content:"";width:24px;height:1px;background:var(--signal);}
 
   /* ================= CROW INTRO ORCHESTRATOR ================= */
-  body.no-scroll { overflow: hidden; height: 100vh; touch-action: none; }
+  html.no-scroll, body.no-scroll { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
   #intro-orchestrator { position: fixed; inset: 0; z-index: 500; background: var(--bg); transition: background 1.2s cubic-bezier(0.2, 1, 0.3, 1); }
   #intro-orchestrator.is-transparent { background: transparent; pointer-events: none; }
   #crow-container { 
@@ -1167,6 +1167,7 @@
 
       const handleWheel = (e) => {
         if (isFinished) return;
+        e.preventDefault();
         advancePlayback(e.deltaY);
       };
       
@@ -1177,15 +1178,16 @@
       };
       const handleTouchMove = (e) => {
         if (isFinished) return;
+        e.preventDefault();
         const touchY = e.touches[0].clientY;
         const deltaY = touchStartY - touchY;
         touchStartY = touchY;
         advancePlayback(deltaY);
       };
 
-      window.addEventListener('wheel', handleWheel, { passive: true });
-      window.addEventListener('touchstart', handleTouchStart, { passive: true });
-      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('touchstart', handleTouchStart, { passive: false });
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
       const tick = (now) => {
         if (!isFinished) {
@@ -1212,6 +1214,7 @@
             
             if (crowVideo.currentTime >= crowVideo.duration - 0.5 && !isReversing) {
               isFinished = true;
+              document.documentElement.classList.remove('no-scroll');
               document.body.classList.remove('no-scroll');
               
               orchestrator.classList.add('is-transparent');
