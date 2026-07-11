@@ -87,7 +87,10 @@
 
   /* ================= CROW INTRO ORCHESTRATOR ================= */
   html.no-scroll, body.no-scroll { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
-  #intro-orchestrator { position: fixed; inset: 0; z-index: 500; background: var(--bg); transition: background 1.2s cubic-bezier(0.2, 1, 0.3, 1); }
+  #intro-orchestrator { 
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+    z-index: 500; background: var(--bg); transition: background 1.2s cubic-bezier(0.2, 1, 0.3, 1); 
+  }
   #intro-orchestrator.is-transparent { background: transparent; pointer-events: none; }
   #crow-container { 
     position: absolute; bottom: 0; right: 0; 
@@ -117,7 +120,15 @@
   #crow-container.is-pip:hover {
     opacity: 1;
   }
-  #crow-container video { width: 100%; height: 100%; object-fit: cover; }
+  #crow-container video { 
+    width: 100%; height: 100%; object-fit: cover; 
+    transform: scale(1.35); /* Scale up to remove any baked-in black bars */
+    transform-origin: center center;
+    transition: transform 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+  }
+  #crow-container.is-pip video {
+    transform: scale(1);
+  }
   #crow-fade { 
     position: absolute; inset: 0; background: rgba(0,0,0,0.6); 
     opacity: 0; pointer-events: none; transition: opacity 1s ease; 
