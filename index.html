@@ -245,7 +245,6 @@
   /* ================= TOOLS MARQUEE ================= */
   .marquee-wrap{border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:26px 0;}
   .marquee{display:flex; width:max-content; animation:scroll 32s linear infinite;}
-  .marquee:hover{animation-play-state:paused;}
   .marquee span{
     font-family:'Bebas Neue',sans-serif; font-size:34px; color:var(--paper);
     padding:0 34px; white-space:nowrap; display:flex; align-items:center; gap:34px;
@@ -633,6 +632,7 @@
 <div class="marquee-wrap">
   <div class="marquee mono" id="marquee">
     <span>Midjourney</span><span>Premiere Pro</span><span>Figma</span>
+    <span>Midjourney</span><span>Premiere Pro</span><span>Figma</span>
   </div>
 </div>
 
@@ -759,14 +759,6 @@
 <script>
   // progress bar
   const progress = document.getElementById('progress');
-  
-  // clone marquee for seamless scroll
-  const marquee = document.getElementById('marquee');
-  if(marquee){
-    // clone multiple times to ensure it fills wide screens even with fewer items
-    const originalHTML = marquee.innerHTML;
-    marquee.innerHTML += originalHTML + originalHTML + originalHTML;
-  }
   
   window.addEventListener('scroll', () => {
     const h = document.documentElement;
