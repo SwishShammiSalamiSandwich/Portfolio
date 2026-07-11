@@ -90,23 +90,23 @@
   #intro-orchestrator { position: fixed; inset: 0; z-index: 500; background: var(--bg); transition: background 1.2s cubic-bezier(0.2, 1, 0.3, 1); }
   #intro-orchestrator.is-transparent { background: transparent; pointer-events: none; }
   #crow-container { 
-    position: absolute; inset: 0; z-index: 10; 
-    clip-path: inset(0px 0px 0px 0px round 0px);
-    transition: clip-path 1.2s cubic-bezier(0.2, 1, 0.3, 1); 
+    position: absolute; bottom: 0; right: 0; 
+    width: 100%; height: 100%; z-index: 10; 
+    border-radius: 0px; border: 1px solid transparent;
+    transition: width 1.2s cubic-bezier(0.2, 1, 0.3, 1), 
+                height 1.2s cubic-bezier(0.2, 1, 0.3, 1), 
+                bottom 1.2s cubic-bezier(0.2, 1, 0.3, 1), 
+                right 1.2s cubic-bezier(0.2, 1, 0.3, 1),
+                border-radius 1.2s cubic-bezier(0.2, 1, 0.3, 1),
+                border-color 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+    overflow: hidden;
   }
   #crow-container.is-pip { 
-    clip-path: inset(calc(100vh - 181px) 24px 24px calc(100vw - 304px) round 8px); 
+    width: 280px; height: 157px; 
+    bottom: 24px; right: 24px; 
+    border-radius: 8px; border-color: rgba(255,255,255,0.15);
     pointer-events: none; 
   }
-  #crow-container::after {
-    content: ""; position: absolute; pointer-events: none;
-    top: calc(100vh - 181px); left: calc(100vw - 304px);
-    width: 280px; height: 157px;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    opacity: 0; transition: opacity 1.2s cubic-bezier(0.2, 1, 0.3, 1);
-  }
-  #crow-container.is-pip::after { opacity: 1; }
   #crow-container video { width: 100%; height: 100%; object-fit: cover; }
   #crow-fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
 
