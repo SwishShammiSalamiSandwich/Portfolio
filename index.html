@@ -282,13 +282,13 @@
     position:relative; aspect-ratio:4/5; background:var(--ink-2); overflow:hidden;
     cursor:pointer;
   }
-  .g-tile img{
+  .g-tile img, .g-tile video{
     position:relative; z-index:1;
     width:100%; height:100%; object-fit:cover; display:block;
     filter:grayscale(.25) contrast(1.05);
     transition:transform .6s ease, filter .4s ease;
   }
-  .g-tile:hover img{transform:scale(1.06); filter:grayscale(0) contrast(1.05);}
+  .g-tile:hover img, .g-tile:hover video{transform:scale(1.06); filter:grayscale(0) contrast(1.05);}
   .g-tile:hover .hover-overlay{opacity:1 !important;}
   .g-placeholder{
     position:absolute; inset:0; display:flex; flex-direction:column;
@@ -314,11 +314,18 @@
   .g-caption span{font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--signal); letter-spacing:.1em;}
 
   .lightbox{
-    position:fixed; inset:0; z-index:300; background:rgba(11,11,12,.94);
+    position:fixed; inset:0; z-index:300; background:rgba(11,11,12,.70); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
     display:none; align-items:center; justify-content:center; padding:40px;
   }
-  .lightbox.open{display:flex;}
-  .lightbox img{max-width:min(900px,90vw); max-height:82vh; object-fit:contain; border:1px solid var(--line);}
+  .lightbox.open{display:flex; animation:fadeIn 0.3s forwards;}
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  
+  .lightbox img, .lightbox video{
+    max-width:min(1000px,90vw); max-height:82vh; object-fit:contain; border:1px solid var(--line);
+    border-radius:6px; box-shadow:0 30px 60px rgba(0,0,0,0.6);
+    animation: popOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes popOut { from{transform:scale(0.92) translateY(20px);} to{transform:scale(1) translateY(0);} }
   .lightbox-close{
     position:absolute; top:28px; right:32px; font-family:'JetBrains Mono',monospace;
     color:var(--paper-dim); font-size:12px; letter-spacing:.1em; cursor:pointer; border:1px solid var(--line); padding:8px 14px;
@@ -601,9 +608,10 @@
         <div class="g-caption"><b>Aeroplane Rice</b><span>REBRAND / PACKAGING</span></div>
       </div>
 
-      <div class="g-tile" data-caption="Independence" data-tagline="CAMPAIGN KEY ART">
-        <img src="assets/independence-campaign.jpg" alt="Independence FMCG campaign key art" onerror="this.remove()">
-        <div class="g-placeholder"><div class="plus">＋</div><span>INDEPENDENCE-CAMPAIGN.JPG<br>Festive campaign concept</span></div>
+      <div class="g-tile" data-video="assets/independence.mp4" data-caption="Independence" data-tagline="CAMPAIGN KEY ART">
+        <video src="assets/independence.mp4#t=1" muted playsinline></video>
+        <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2;">CLICK TO PLAY</div>
+        <div class="g-placeholder"><div class="plus">＋</div><span>INDEPENDENCE.MP4<br>Festive campaign concept</span></div>
         <div class="g-caption"><b>Independence</b><span>CAMPAIGN KEY ART</span></div>
       </div>
 
@@ -625,7 +633,8 @@
 
 <div class="lightbox" id="lightbox">
   <div class="lightbox-close" id="lightboxClose">CLOSE ✕</div>
-  <img id="lightboxImg" src="" alt="">
+  <img id="lightboxImg" src="" alt="" style="display:none;">
+  <video id="lightboxVideo" src="" controls style="display:none;"></video>
 </div>
 
 <!-- ============ TOOLS MARQUEE ============ -->
@@ -778,19 +787,38 @@
   // gallery lightbox — only opens for tiles that actually have a loaded image
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxVideo = document.getElementById('lightboxVideo');
   document.querySelectorAll('.g-tile').forEach(tile => {
     tile.addEventListener('click', (e) => {
       if(tile.classList.contains('no-lightbox')) return;
+      const videoSrc = tile.getAttribute('data-video');
       const img = tile.querySelector('img');
-      if(!img) return; // placeholder tile, nothing to expand yet
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      lightbox.classList.add('open');
+      if(videoSrc){
+        lightboxImg.style.display = 'none';
+        lightboxVideo.style.display = 'block';
+        lightboxVideo.src = videoSrc;
+        lightboxVideo.play();
+        lightbox.classList.add('open');
+      } else if(img) {
+        lightboxVideo.style.display = 'none';
+        lightboxVideo.pause();
+        lightboxImg.style.display = 'block';
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.add('open');
+      }
     });
   });
-  document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('open'));
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) lightbox.classList.remove('open'); });
-  window.addEventListener('keydown', (e) => { if(e.key === 'Escape') lightbox.classList.remove('open'); });
+  const closeLightbox = () => {
+    lightbox.classList.remove('open');
+    setTimeout(() => {
+      lightboxVideo.pause();
+      lightboxVideo.src = "";
+    }, 400); // Wait for transition
+  };
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  window.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
 
   const clockEl = document.getElementById('hud-clock');
   const start = Date.now();
