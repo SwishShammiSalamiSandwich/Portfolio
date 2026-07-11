@@ -570,7 +570,7 @@
 </section>
 
 <!-- ============ TIMELINE ============ -->
-<section class="sec">
+<section class="sec" id="jio-sec">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">Case Study — Jio Creative Labs</div>
@@ -1285,6 +1285,38 @@
       };
       
       window.requestAnimationFrame(tick);
+    }
+  })();
+
+  // ============ PiP VIDEO SWAP ON SCROLL ============
+  (function(){
+    const jioSec = document.getElementById('jio-sec');
+    const crowVideo = document.getElementById('crow-video');
+    const crowContainer = document.getElementById('crow-container');
+    
+    if (jioSec && crowVideo && crowContainer) {
+      let hasSwapped = false;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !hasSwapped && crowContainer.classList.contains('is-pip')) {
+            hasSwapped = true;
+            crowVideo.style.opacity = 0; // Fade out slightly during swap for smoothness
+            setTimeout(() => {
+              crowVideo.src = 'assets/home.mp4';
+              crowVideo.play();
+              crowVideo.style.opacity = 1;
+              crowVideo.onloadedmetadata = () => {
+                if (crowVideo.videoHeight) {
+                  const aspect = crowVideo.videoWidth / crowVideo.videoHeight;
+                  crowContainer.style.height = `${320 / aspect}px`;
+                }
+              };
+            }, 150);
+          }
+        });
+      }, { threshold: 0.2 });
+      
+      observer.observe(jioSec);
     }
   })();
 </script>
