@@ -514,6 +514,37 @@
       opacity:1 !important; transform:none !important;
     }
   }
+  /* ================= VERTICAL NAV ================= */
+  #v-nav {
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+    z-index: 1000; padding-left: 2px;
+  }
+  #v-nav::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: rgba(228, 68, 46, 0.2); /* var(--signal) with opacity */
+  }
+  #v-nav ul { list-style: none; display: flex; flex-direction: column; gap: 32px; margin: 0; padding: 0; }
+  #v-nav li { position: relative; display: flex; align-items: center; perspective: 600px; cursor: pointer; }
+  #v-nav .dot {
+    position: absolute; left: -2px; width: 2px; height: 24px;
+    background: transparent; transition: background 0.3s ease;
+  }
+  #v-nav li.active .dot, #v-nav li:hover .dot { background: var(--signal); }
+  
+  #v-nav .label {
+    padding: 6px 14px; margin-left: 12px;
+    background: var(--ink); color: var(--paper); border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+  #v-nav:hover .label,
+  #v-nav li.auto-open .label {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
 </style>
 </head>
 <body class="no-scroll">
@@ -521,6 +552,21 @@
 <canvas id="bgCanvas" aria-hidden="true"></canvas>
 <div class="progress" id="progress"></div>
 <div class="rec-hud"><span class="rec-dot"></span><span class="mono" id="hud-clock">00:00:00:00</span><span>&nbsp;REC</span></div>
+
+<!-- ============ VERTICAL NAVIGATION ============ -->
+<nav id="v-nav">
+  <ul>
+    <li data-target="#hero-sec"><span class="dot"></span><span class="label">Start</span></li>
+    <li data-target="#thesis-sec"><span class="dot"></span><span class="label">Thesis</span></li>
+    <li data-target="#jio-sec"><span class="dot"></span><span class="label">Case Study</span></li>
+    <li data-target="#work-sec"><span class="dot"></span><span class="label">Selected Work</span></li>
+    <li data-target="#spotlight-sec"><span class="dot"></span><span class="label">Anandam</span></li>
+    <li data-target="#gallery-sec"><span class="dot"></span><span class="label">Gallery</span></li>
+    <li data-target="#testimonials-sec"><span class="dot"></span><span class="label">Testimonials</span></li>
+    <li data-target="#prior-sec"><span class="dot"></span><span class="label">Prior Credit</span></li>
+    <li data-target="#beyond-sec"><span class="dot"></span><span class="label">Beyond The Reel</span></li>
+  </ul>
+</nav>
 
 <!-- ============ INTRO SCROLL ORCHESTRATOR ============ -->
 <div id="intro-orchestrator">
@@ -534,7 +580,7 @@
 
 <!-- ============ HERO ============ -->
 <div id="pip-track" style="position: relative;">
-<section class="hero">
+<section class="hero" id="hero-sec">
   <div class="hero-frame"></div>
   <span class="hero-corner tl mono">MAKER LOG / 2026</span>
   <span class="hero-corner tr mono">MUMBAI, IN</span>
@@ -651,7 +697,7 @@
 </div>
 
 <!-- ============ WORK GRID ============ -->
-<section class="sec">
+<section class="sec" id="work-sec">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">Selected Work</div>
@@ -717,7 +763,7 @@
 </section>
 
 <!-- ============ ANANDAM SPOTLIGHT ============ -->
-<section class="sec">
+<section class="sec" id="spotlight-sec">
   <div class="wrap">
     <div class="spotlight">
       <div class="spotlight-head">
@@ -744,7 +790,7 @@
 </section>
 
 <!-- ============ WORK GALLERY ============ -->
-<section class="sec" style="padding-top:0;">
+<section class="sec" id="gallery-sec" style="padding-top:0;">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">The Reel, In Stills</div>
@@ -820,7 +866,7 @@
 </div>
 
 <!-- ============ TESTIMONIALS ============ -->
-<section class="sec">
+<section class="sec" id="testimonials-sec">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">From The Team</div>
@@ -855,7 +901,7 @@
 
 
 <!-- ============ PRIOR CREDIT ============ -->
-<section class="sec">
+<section class="sec" id="prior-sec">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">SYSTEMS, SIDE PROJECTS &amp; PRIOR WORK</div>
@@ -875,7 +921,7 @@
 </section>
 
 <!-- ============ BEYOND THE REEL ============ -->
-<section class="sec">
+<section class="sec" id="beyond-sec">
   <div class="wrap">
     <div class="sec-head">
       <div class="label">Beyond The Reel</div>
@@ -1362,6 +1408,45 @@
       
       swapObserver.observe(jioSec);
     }
+  })();
+  // ============ VERTICAL NAV OBSERVER ============
+  (function(){
+    const navItems = document.querySelectorAll('#v-nav li');
+    let autoCloseTimeout = null;
+
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const targetId = entry.target.id;
+          navItems.forEach(li => {
+            if (li.getAttribute('data-target') === `#${targetId}`) {
+              li.classList.add('active');
+              li.classList.add('auto-open');
+              
+              if (autoCloseTimeout) clearTimeout(autoCloseTimeout);
+              autoCloseTimeout = setTimeout(() => {
+                navItems.forEach(item => item.classList.remove('auto-open'));
+              }, 2000);
+            } else {
+              li.classList.remove('active');
+              li.classList.remove('auto-open');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3 }); // Fire when 30% of the section is visible
+
+    navItems.forEach(li => {
+      const targetSelector = li.getAttribute('data-target');
+      const section = document.querySelector(targetSelector);
+      if (section) navObserver.observe(section);
+      
+      li.addEventListener('click', () => {
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
   })();
 </script>
 </body>
