@@ -108,6 +108,11 @@
     border-radius: 8px; border-color: rgba(255,255,255,0.15);
     pointer-events: auto;
     opacity: 0.7;
+    position: fixed;
+  }
+  #crow-container.is-pip.is-docked {
+    position: absolute;
+    bottom: 32px;
   }
   #crow-container.is-pip:hover {
     opacity: 1;
@@ -517,6 +522,7 @@
 </div>
 
 <!-- ============ HERO ============ -->
+<div id="pip-track" style="position: relative;">
 <section class="hero">
   <div class="hero-frame"></div>
   <span class="hero-corner tl mono">MAKER LOG / 2026</span>
@@ -630,6 +636,8 @@
     </div>
   </div>
 </section>
+<div id="pip-dock-point" style="position: absolute; bottom: 32px; right: 32px; width: 1px; height: 1px; pointer-events: none;"></div>
+</div>
 
 <!-- ============ WORK GRID ============ -->
 <section class="sec">
@@ -1268,6 +1276,13 @@
               orchestrator.classList.add('is-transparent');
               crowContainer.classList.add('is-pip');
               
+              setTimeout(() => {
+                const pipTrack = document.getElementById('pip-track');
+                if (pipTrack && crowContainer) {
+                  pipTrack.appendChild(crowContainer);
+                }
+              }, 1200);
+              
               crowVideo.play();
               crowVideo.loop = true;
               
@@ -1288,35 +1303,65 @@
     }
   })();
 
-  // ============ PiP VIDEO SWAP ON SCROLL ============
+  // ============ PiP VIDEO SWAP & DOCKING ============
   (function(){
     const jioSec = document.getElementById('jio-sec');
+    const dockPoint = document.getElementById('pip-dock-point');
     const crowVideo = document.getElementById('crow-video');
     const crowContainer = document.getElementById('crow-container');
     
-    if (jioSec && crowVideo && crowContainer) {
-      let hasSwapped = false;
-      const observer = new IntersectionObserver((entries) => {
+    if (jioSec && dockPoint && crowVideo && crowContainer) {
+      // Docking Observer
+      const dockObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && !hasSwapped && crowContainer.classList.contains('is-pip')) {
-            hasSwapped = true;
-            crowVideo.style.opacity = 0; // Fade out slightly during swap for smoothness
-            setTimeout(() => {
-              crowVideo.src = 'assets/home.mp4';
-              crowVideo.play();
-              crowVideo.style.opacity = 1;
-              crowVideo.onloadedmetadata = () => {
-                if (crowVideo.videoHeight) {
-                  const aspect = crowVideo.videoWidth / crowVideo.videoHeight;
-                  crowContainer.style.height = `${320 / aspect}px`;
-                }
-              };
-            }, 150);
+          if (!crowContainer.classList.contains('is-pip')) return;
+          if (entry.boundingClientRect.top <= window.innerHeight) {
+            crowContainer.classList.add('is-docked');
+          } else {
+            crowContainer.classList.remove('is-docked');
+          }
+        });
+      }, { threshold: [0, 1] });
+      dockObserver.observe(dockPoint);
+
+      // Swapping Observer
+      let hasSwapped = false;
+      const swapObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!crowContainer.classList.contains('is-pip')) return;
+
+          if (entry.isIntersecting) {
+            if (!hasSwapped) {
+              hasSwapped = true;
+              crowVideo.style.opacity = 0;
+              setTimeout(() => {
+                crowVideo.src = 'assets/home.mp4';
+                crowVideo.play();
+                crowVideo.style.opacity = 1;
+                crowVideo.onloadedmetadata = () => {
+                  if (crowVideo.videoHeight) {
+                    const aspect = crowVideo.videoWidth / crowVideo.videoHeight;
+                    crowContainer.style.height = `${320 / aspect}px`;
+                  }
+                };
+              }, 150);
+            }
+          } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
+            if (hasSwapped) {
+              hasSwapped = false;
+              crowVideo.style.opacity = 0;
+              setTimeout(() => {
+                crowVideo.src = 'assets/crow.mp4';
+                crowVideo.play();
+                crowVideo.style.opacity = 1;
+                crowContainer.style.height = '180px';
+              }, 150);
+            }
           }
         });
       }, { threshold: 0.2 });
       
-      observer.observe(jioSec);
+      swapObserver.observe(jioSec);
     }
   })();
 </script>
