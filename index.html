@@ -98,14 +98,19 @@
                 bottom 1.2s cubic-bezier(0.2, 1, 0.3, 1), 
                 right 1.2s cubic-bezier(0.2, 1, 0.3, 1),
                 border-radius 1.2s cubic-bezier(0.2, 1, 0.3, 1),
-                border-color 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+                border-color 1.2s cubic-bezier(0.2, 1, 0.3, 1),
+                opacity 0.6s cubic-bezier(0.2, 1, 0.3, 1);
     overflow: hidden;
   }
   #crow-container.is-pip { 
     width: 320px; height: 180px; 
     bottom: 32px; right: 32px; 
     border-radius: 8px; border-color: rgba(255,255,255,0.15);
-    pointer-events: none; 
+    pointer-events: auto;
+    opacity: 0.7;
+  }
+  #crow-container.is-pip:hover {
+    opacity: 1;
   }
   #crow-container video { width: 100%; height: 100%; object-fit: cover; }
   #crow-fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
@@ -1129,21 +1134,22 @@
     if (orchestrator && crowVideo) {
       crowVideo.load();
       
-      let virtualScroll = 0;
-      const maxScroll = 3000; // Total virtual pixels to scroll
-      let targetScroll = 0;
+      let targetPlayTime = 0;
       let isFinished = false;
       let isAnimating = true;
 
-      const lerp = (start, end, amt) => (1 - amt) * start + amt * end;
+      const advancePlayback = (delta) => {
+        if (isFinished || !crowVideo.duration) return;
+        if (delta > 0) {
+          targetPlayTime = Math.max(targetPlayTime, crowVideo.currentTime + 3);
+          targetPlayTime = Math.min(crowVideo.duration, targetPlayTime);
+          if (crowVideo.paused) crowVideo.play();
+        }
+      };
 
       const handleWheel = (e) => {
         if (isFinished) return;
-        let delta = e.deltaY;
-        if (e.deltaMode === 1) delta *= 33;
-        
-        targetScroll += delta * 2.5; // Boost sensitivity for trackpads
-        targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+        if (e.deltaY > 0) advancePlayback(e.deltaY);
       };
       
       let touchStartY = 0;
@@ -1156,49 +1162,35 @@
         const touchY = e.touches[0].clientY;
         const deltaY = touchStartY - touchY;
         touchStartY = touchY;
-        targetScroll += deltaY * 3.5; // Boost sensitivity for touch
-        targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+        if (deltaY > 0) advancePlayback(deltaY);
       };
 
       window.addEventListener('wheel', handleWheel, { passive: true });
       window.addEventListener('touchstart', handleTouchStart, { passive: true });
       window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
-      let lastVideoUpdate = 0;
-
-      const tick = (now) => {
+      const tick = () => {
         if (!isFinished) {
-          virtualScroll = lerp(virtualScroll, targetScroll, 0.1);
-          let progress = virtualScroll / maxScroll;
-          progress = Math.max(0, Math.min(1, progress));
-          
           if (crowVideo.readyState >= 1 && crowVideo.duration) {
-            // Throttle video scrubbing to ~24fps (40ms) to prevent H.264 decoding choke
-            if (now - lastVideoUpdate > 40) {
-              crowVideo.currentTime = Math.max(0.01, progress * crowVideo.duration);
-              lastVideoUpdate = now;
+            if (!crowVideo.paused && crowVideo.currentTime >= targetPlayTime) {
+              crowVideo.pause();
             }
-          }
-          
-          // Fade out crowFade is no longer needed since it scales to PiP
-          crowFade.style.opacity = 0;
-          
-          if (progress >= 0.99) {
-            isFinished = true;
-            document.body.classList.remove('no-scroll');
             
-            // Transition to PiP
-            orchestrator.classList.add('is-transparent');
-            crowContainer.classList.add('is-pip');
-            
-            // Start playing the video in a loop
-            crowVideo.play();
-            crowVideo.loop = true;
-            
-            window.removeEventListener('wheel', handleWheel);
-            window.removeEventListener('touchstart', handleTouchStart);
-            window.removeEventListener('touchmove', handleTouchMove);
-            isAnimating = false;
+            if (crowVideo.currentTime >= crowVideo.duration - 0.5) {
+              isFinished = true;
+              document.body.classList.remove('no-scroll');
+              
+              orchestrator.classList.add('is-transparent');
+              crowContainer.classList.add('is-pip');
+              
+              crowVideo.play();
+              crowVideo.loop = true;
+              
+              window.removeEventListener('wheel', handleWheel);
+              window.removeEventListener('touchstart', handleTouchStart);
+              window.removeEventListener('touchmove', handleTouchMove);
+              isAnimating = false;
+            }
           }
         }
         
