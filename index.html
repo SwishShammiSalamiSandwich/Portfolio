@@ -87,8 +87,26 @@
 
   /* ================= CROW INTRO ORCHESTRATOR ================= */
   body.no-scroll { overflow: hidden; height: 100vh; touch-action: none; }
-  #intro-orchestrator { position: fixed; inset: 0; z-index: 500; background: var(--bg); transition: opacity 0.5s ease; }
-  #crow-container { position: absolute; inset: 0; z-index: 10; }
+  #intro-orchestrator { position: fixed; inset: 0; z-index: 500; background: var(--bg); transition: background 1.2s cubic-bezier(0.2, 1, 0.3, 1); }
+  #intro-orchestrator.is-transparent { background: transparent; pointer-events: none; }
+  #crow-container { 
+    position: absolute; inset: 0; z-index: 10; 
+    clip-path: inset(0px 0px 0px 0px round 0px);
+    transition: clip-path 1.2s cubic-bezier(0.2, 1, 0.3, 1); 
+  }
+  #crow-container.is-pip { 
+    clip-path: inset(calc(100vh - 181px) 24px 24px calc(100vw - 304px) round 8px); 
+    pointer-events: none; 
+  }
+  #crow-container::after {
+    content: ""; position: absolute; pointer-events: none;
+    top: calc(100vh - 181px); left: calc(100vw - 304px);
+    width: 280px; height: 157px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    opacity: 0; transition: opacity 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+  }
+  #crow-container.is-pip::after { opacity: 1; }
   #crow-container video { width: 100%; height: 100%; object-fit: cover; }
   #crow-fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
 
@@ -1161,19 +1179,21 @@
             }
           }
           
-          if (progress > 0.8) {
-            const fadeProgress = (progress - 0.8) / 0.15;
-            crowFade.style.opacity = Math.min(1, fadeProgress);
-          } else {
-            crowFade.style.opacity = 0;
-          }
+          // Fade out crowFade is no longer needed since it scales to PiP
+          crowFade.style.opacity = 0;
           
           if (progress >= 0.99) {
             isFinished = true;
             document.body.classList.remove('no-scroll');
-            orchestrator.style.opacity = 0;
-            orchestrator.style.pointerEvents = 'none';
-            setTimeout(() => orchestrator.remove(), 600);
+            
+            // Transition to PiP
+            orchestrator.classList.add('is-transparent');
+            crowContainer.classList.add('is-pip');
+            
+            // Start playing the video in a loop
+            crowVideo.play();
+            crowVideo.loop = true;
+            
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
