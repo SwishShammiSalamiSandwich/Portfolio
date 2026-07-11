@@ -515,9 +515,20 @@
     }
   }
   /* ================= VERTICAL NAV ================= */
+  /* ================= VERTICAL NAV ================= */
   #v-nav {
     position: fixed; left: 0; top: 50%; transform: translateY(-50%);
     z-index: 1000; padding-left: 2px;
+    opacity: 0; pointer-events: none; transition: opacity 1s ease;
+  }
+  #v-nav.is-visible { opacity: 1; pointer-events: auto; }
+  @media (max-width: 768px) {
+    #v-nav .label { display: none !important; }
+  }
+  #v-nav-dot {
+    position: absolute; left: -3px; top: 0;
+    width: 8px; height: 8px; background: var(--signal); border-radius: 50%;
+    z-index: 2; pointer-events: none; transition: top 0.1s linear;
   }
   #v-nav::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0;
@@ -555,6 +566,7 @@
 
 <!-- ============ VERTICAL NAVIGATION ============ -->
 <nav id="v-nav">
+  <div id="v-nav-dot"></div>
   <ul>
     <li data-target="#hero-sec"><span class="dot"></span><span class="label">Start</span></li>
     <li data-target="#thesis-sec"><span class="dot"></span><span class="label">Thesis</span></li>
@@ -1318,6 +1330,9 @@
               document.documentElement.classList.remove('no-scroll');
               document.body.classList.remove('no-scroll');
               
+              const vNav = document.getElementById('v-nav');
+              if (vNav) vNav.classList.add('is-visible');
+              
               orchestrator.classList.add('is-transparent');
               crowContainer.classList.add('is-pip');
               
@@ -1447,6 +1462,23 @@
         }
       });
     });
+
+    const updateNavDot = () => {
+      const dot = document.getElementById('v-nav-dot');
+      if (!dot || navItems.length === 0 || document.body.classList.contains('no-scroll')) return;
+      
+      const scrollPct = window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
+      const startY = navItems[0].offsetTop + (navItems[0].offsetHeight / 2);
+      const endY = navItems[navItems.length - 1].offsetTop + (navItems[navItems.length - 1].offsetHeight / 2);
+      const range = endY - startY;
+      
+      dot.style.top = (startY + (scrollPct * range) - 4) + 'px';
+    };
+    
+    window.addEventListener('scroll', updateNavDot, { passive: true });
+    window.addEventListener('resize', updateNavDot, { passive: true });
+    // Initial call in case of mid-page reload
+    setTimeout(updateNavDot, 1000);
   })();
 </script>
 </body>
