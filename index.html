@@ -290,6 +290,33 @@
   }
   .g-tile:hover img, .g-tile:hover video{transform:scale(1.06); filter:grayscale(0) contrast(1.05);}
   .g-tile:hover .hover-overlay{opacity:1 !important;}
+
+  /* Feature Film custom hover */
+  .expand-on-hover { overflow: visible !important; }
+  .expand-on-hover img, .expand-on-hover .hover-overlay {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .expand-on-hover:hover { z-index: 100; }
+  .expand-on-hover:hover img, .expand-on-hover:hover .hover-overlay {
+    width: 240% !important;
+    height: 100% !important;
+    transform: translate(-50%, -50%) scale(1.06) !important;
+  }
+  .expand-on-hover:hover img {
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    border-radius: 6px;
+    filter: grayscale(0) contrast(1.05) !important;
+  }
+  .expand-on-hover:hover .hover-overlay {
+    border-radius: 6px;
+    opacity: 1 !important;
+  }
   .g-placeholder{
     position:absolute; inset:0; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:10px;
@@ -596,7 +623,7 @@
         <div class="g-caption"><b>Anandam</b><span>STAGE &amp; KEY ART</span></div>
       </div>
 
-      <div class="g-tile no-lightbox" data-caption="Feature Film" data-tagline="STORYBOARD FRAME">
+      <div class="g-tile no-lightbox expand-on-hover" data-caption="Feature Film" data-tagline="STORYBOARD FRAME">
         <img src="assets/tripura.png" alt="Feature film storyboard frame" onerror="this.remove()">
         <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; text-align:center; padding:20px;">CONTACT TO KNOW MORE</div>
         <div class="g-placeholder"><div class="plus">＋</div><span>TRIPURA.PNG<br>One of 64 shots</span></div>
