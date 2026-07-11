@@ -1190,16 +1190,30 @@
       };
       resetScrollTimer();
 
-      const SCROLL_SPEED = 0.003;
       const advancePlayback = (delta) => {
         if (isFinished || !crowVideo.duration) return;
         resetScrollTimer();
-        
-        targetPlayTime += delta * SCROLL_SPEED;
-        targetPlayTime = Math.max(0, Math.min(crowVideo.duration, targetPlayTime));
-        
-        if (!crowVideo.paused) crowVideo.pause();
-        isReversing = (delta < 0);
+        if (delta > 0) {
+          // Scroll down: Play forward
+          isReversing = false;
+          if (crowVideo.currentTime < targetPlayTime) {
+            targetPlayTime = Math.max(targetPlayTime, crowVideo.currentTime + 1.0);
+          } else {
+            targetPlayTime = crowVideo.currentTime + 1.0;
+          }
+          targetPlayTime = Math.min(crowVideo.duration, targetPlayTime);
+          if (crowVideo.paused) crowVideo.play();
+        } else if (delta < 0) {
+          // Scroll up: Reverse backward
+          isReversing = true;
+          if (crowVideo.currentTime > targetPlayTime) {
+            targetPlayTime = Math.min(targetPlayTime, crowVideo.currentTime - 1.0);
+          } else {
+            targetPlayTime = Math.max(0, crowVideo.currentTime - 1.0);
+          }
+          if (!crowVideo.paused) crowVideo.pause();
+          lastReverseTime = performance.now();
+        }
       };
 
       const handleWheel = (e) => {
@@ -1229,11 +1243,24 @@
       const tick = (now) => {
         if (!isFinished) {
           if (crowVideo.readyState >= 1 && crowVideo.duration) {
-            const diff = targetPlayTime - crowVideo.currentTime;
-            if (Math.abs(diff) > 0.01) {
-              crowVideo.currentTime += diff * 0.08;
-            } else if (targetPlayTime >= crowVideo.duration - 0.5) {
-              crowVideo.currentTime = targetPlayTime;
+            if (isReversing) {
+              if (crowVideo.currentTime > targetPlayTime) {
+                // Manually scrub backwards (throttled to ~30fps to prevent H.264 choke)
+                const dt = now - lastReverseTime;
+                if (dt > 33) {
+                  // Cap time delta in case tab was inactive, rewind 1.5x speed for snappiness
+                  const rewindAmount = Math.min(0.1, dt / 1000) * 1.5;
+                  crowVideo.currentTime = Math.max(0, crowVideo.currentTime - rewindAmount);
+                  lastReverseTime = now;
+                }
+              } else {
+                isReversing = false;
+              }
+            } else {
+              // Normal forward playback
+              if (!crowVideo.paused && crowVideo.currentTime >= targetPlayTime) {
+                crowVideo.pause();
+              }
             }
             
             if (crowVideo.currentTime >= crowVideo.duration - 0.5 && !isReversing) {
