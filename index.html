@@ -1078,6 +1078,8 @@
     }
     function draw(){
       ctx.clearRect(0, 0, w, h);
+      const time = performance.now() * 0.0015; // Animation time
+
       if(mouse.x > -500){
         const glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 280);
         glow.addColorStop(0, 'rgba(228,68,46,0.09)');
@@ -1089,15 +1091,23 @@
         const dx = d.ox - mouse.x, dy = d.oy - mouse.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         const force = Math.max(0, 1 - dist / 190);
+        
+        // Idle wave based on position
+        const wave = Math.sin(time + (d.ox + d.oy) * 0.005) * 3;
+
         if(force > 0){
           const angle = Math.atan2(dy, dx);
           d.x = d.ox + Math.cos(angle) * force * 13;
-          d.y = d.oy + Math.sin(angle) * force * 13;
+          d.y = d.oy + wave + Math.sin(angle) * force * 13;
         } else {
-          d.x = d.ox; d.y = d.oy;
+          d.x = d.ox; d.y = d.oy + wave;
         }
-        const alpha = 0.075 + force * 0.5;
+        
+        // Highlight active wave crests slightly
+        const waveAlpha = (Math.sin(time + (d.ox + d.oy) * 0.005) + 1) * 0.015;
+        const alpha = 0.075 + waveAlpha + force * 0.5;
         const r = 1 + force * 1.7;
+        
         ctx.beginPath();
         ctx.fillStyle = force > 0.6 ? `rgba(228,68,46,${Math.min(alpha,0.85)})` : `rgba(241,239,233,${alpha})`;
         ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
