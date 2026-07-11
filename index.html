@@ -375,6 +375,13 @@
     will-change:opacity, transform;
   }
   .reveal.in-view{opacity:1; transform:translateY(0);}
+  
+  .reveal-right{
+    opacity:0; transform:translateX(80px);
+    transition:opacity 1s cubic-bezier(.16,.84,.44,1), transform 1s cubic-bezier(.16,.84,.44,1);
+    will-change:opacity, transform;
+  }
+  .reveal-right.in-view{opacity:1; transform:translateX(0);}
 
   /* ================= HERO ENTRANCE ================= */
   .hero-bg{opacity:0; animation:heroBgFadeIn 1.4s ease forwards;}
@@ -392,7 +399,7 @@
 
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important; transition:none !important;}
-    .reveal, .hero-eyebrow, .hero h1, .hero-sub, .hero-meta, .scroll-cue, .hero-bg{
+    .reveal, .reveal-right, .hero-eyebrow, .hero h1, .hero-sub, .hero-meta, .scroll-cue, .hero-bg{
       opacity:1 !important; transform:none !important;
     }
   }
@@ -450,7 +457,7 @@
         <div class="label">Thesis</div>
         <p class="intro-lead">Generative AI collapses weeks of early-stage production into hours. That's not a replacement — it's a shift in where your time actually goes. Mine went into <span class="signal">taste, cultural judgment, and knowing when to push the output further and when to scrap it entirely</span>. That's the thread through everything below — storyboards, brand campaigns, stage visuals — and six months of proving it on live briefs at Jio Creative Labs.</p>
       </div>
-      <div class="intro-video-wrap">
+      <div class="intro-video-wrap reveal-right">
         <video src="assets/dog.mp4" autoplay loop muted playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid var(--line);"></video>
       </div>
     </div>
@@ -936,10 +943,10 @@
   // ============ SCROLL-TRIGGERED REVEALS ============
   (function(){
     const targets = document.querySelectorAll(
-      '.sec-head, .intro-lead, .intro-stats, .work-card, .t-row, .quote-card, .outcome, .g-tile, .spotlight, .foot-cta, .marquee-wrap'
+      '.sec-head, .intro-lead, .intro-stats, .work-card, .t-row, .quote-card, .outcome, .g-tile, .spotlight, .foot-cta, .marquee-wrap, .reveal-right'
     );
     targets.forEach((el, i) => {
-      el.classList.add('reveal');
+      if(!el.classList.contains('reveal-right')) el.classList.add('reveal');
       el.style.transitionDelay = ((i % 5) * 70) + 'ms';
     });
     const io = new IntersectionObserver((entries) => {
