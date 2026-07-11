@@ -18,7 +18,7 @@
     --line:#2a2a28;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth; background:var(--ink);}
+  html{scroll-behavior:smooth; background:var(--ink); scroll-snap-type: y proximity;}
   body{
     background:transparent;
     color:var(--paper);
@@ -144,6 +144,7 @@
     display:flex; flex-direction:column; justify-content:center;
     position:relative;
     padding:140px 32px 80px;
+    scroll-snap-align: start;
   }
   .hero-frame{
     position:absolute; inset:24px;
@@ -554,8 +555,8 @@
 </section>
 
 <!-- ============ INTRO ============ -->
-<section class="sec" style="padding-bottom:40px;">
-  <div class="wrap">
+<section class="sec" id="thesis-sec" style="min-height:100svh; display:flex; align-items:center; scroll-snap-align:center;">
+  <div class="wrap" style="width:100%;">
     <div class="intro-grid">
       <div>
         <div class="label">Thesis</div>
