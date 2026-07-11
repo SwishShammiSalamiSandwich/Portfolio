@@ -1044,17 +1044,19 @@
       crowVideo.load();
       
       let virtualScroll = 0;
-      const maxScroll = 2500; // Total virtual pixels to scroll to finish the intro
+      const maxScroll = 3000; // Total virtual pixels to scroll
       let targetScroll = 0;
       let isFinished = false;
       let isAnimating = true;
 
       const lerp = (start, end, amt) => (1 - amt) * start + amt * end;
 
-      // Handle wheel and touch events to accumulate virtual scroll without moving the page
       const handleWheel = (e) => {
         if (isFinished) return;
-        targetScroll += e.deltaY;
+        let delta = e.deltaY;
+        if (e.deltaMode === 1) delta *= 33;
+        
+        targetScroll += delta * 2.5; // Boost sensitivity for trackpads
         targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
       };
       
@@ -1068,7 +1070,7 @@
         const touchY = e.touches[0].clientY;
         const deltaY = touchStartY - touchY;
         touchStartY = touchY;
-        targetScroll += deltaY * 2;
+        targetScroll += deltaY * 3.5; // Boost sensitivity for touch
         targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
       };
 
@@ -1076,15 +1078,20 @@
       window.addEventListener('touchstart', handleTouchStart, { passive: true });
       window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
-      const tick = () => {
+      let lastVideoUpdate = 0;
+
+      const tick = (now) => {
         if (!isFinished) {
-          // Smooth momentum
-          virtualScroll = lerp(virtualScroll, targetScroll, 0.08);
+          virtualScroll = lerp(virtualScroll, targetScroll, 0.1);
           let progress = virtualScroll / maxScroll;
           progress = Math.max(0, Math.min(1, progress));
           
           if (crowVideo.readyState >= 1 && crowVideo.duration) {
-            crowVideo.currentTime = Math.max(0.01, progress * crowVideo.duration);
+            // Throttle video scrubbing to ~24fps (40ms) to prevent H.264 decoding choke
+            if (now - lastVideoUpdate > 40) {
+              crowVideo.currentTime = Math.max(0.01, progress * crowVideo.duration);
+              lastVideoUpdate = now;
+            }
           }
           
           if (progress > 0.8) {
@@ -1096,16 +1103,10 @@
           
           if (progress >= 0.99) {
             isFinished = true;
-            
-            // Release the scroll lock
             document.body.classList.remove('no-scroll');
-            
-            // Fade out orchestrator
             orchestrator.style.opacity = 0;
             orchestrator.style.pointerEvents = 'none';
             setTimeout(() => orchestrator.remove(), 600);
-            
-            // Clean up listeners
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
