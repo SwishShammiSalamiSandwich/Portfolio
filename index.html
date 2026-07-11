@@ -85,6 +85,14 @@
   }
   .label::before{content:"";width:24px;height:1px;background:var(--signal);}
 
+  /* ================= CROW INTRO ORCHESTRATOR ================= */
+  #intro-orchestrator { position: relative; height: 350vh; z-index: 50; }
+  .sticky-viewport { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--bg); }
+  #main-hero { position: absolute; inset: 0; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+  #crow-container { position: absolute; inset: 0; z-index: 10; }
+  #crow-container video { width: 100%; height: 100%; object-fit: cover; }
+  #crow-fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
+
   /* ================= HERO ================= */
   .hero{
     min-height:100svh;
@@ -411,8 +419,12 @@
 <div class="progress" id="progress"></div>
 <div class="rec-hud"><span class="rec-dot"></span><span class="mono" id="hud-clock">00:00:00:00</span><span>&nbsp;REC</span></div>
 
-<!-- ============ HERO ============ -->
-<section class="hero">
+<!-- ============ INTRO SCROLL ORCHESTRATOR ============ -->
+<div id="intro-orchestrator">
+  <div class="sticky-viewport">
+    
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="main-hero">
   <div class="hero-frame"></div>
   <span class="hero-corner tl mono">MAKER LOG / 2026</span>
   <span class="hero-corner tr mono">MUMBAI, IN</span>
@@ -447,7 +459,16 @@
   </div>
 
   <div class="scroll-cue"><span class="bar"></span>SCROLL</div>
-</section>
+    </section>
+
+    <!-- ============ CROW VIDEO ============ -->
+    <div id="crow-container">
+      <video src="assets/crow.mp4" id="crow-video" muted playsinline preload="auto"></video>
+      <div id="crow-fade"></div>
+    </div>
+
+  </div>
+</div>
 
 <!-- ============ INTRO ============ -->
 <section class="sec" style="padding-bottom:40px;">
@@ -1017,6 +1038,68 @@
         ticking = false;
       });
     }, { passive:true });
+  })();
+  // ============ CROW VIDEO SCROLL SCRUBBING ============
+  (function(){
+    const orchestrator = document.getElementById('intro-orchestrator');
+    const crowVideo = document.getElementById('crow-video');
+    const crowFade = document.getElementById('crow-fade');
+    const mainHero = document.getElementById('main-hero');
+    const crowContainer = document.getElementById('crow-container');
+
+    if (orchestrator && crowVideo) {
+      // Force load for Safari/iOS
+      crowVideo.load();
+      
+      let isScrolling = false;
+      const updateScroll = () => {
+        const rect = orchestrator.getBoundingClientRect();
+        // Calculate progress through the orchestrator's height
+        // Scroll range = orchestrator height - viewport height
+        const scrollRange = rect.height - window.innerHeight;
+        let progress = -rect.top / scrollRange;
+        progress = Math.max(0, Math.min(1, progress));
+        
+        // Scrub video (avoid setting to exactly 0 to bypass some browser bugs)
+        if (crowVideo.readyState >= 1 && crowVideo.duration) {
+          crowVideo.currentTime = Math.max(0.01, progress * crowVideo.duration);
+        }
+        
+        // Handle fading
+        // The last 20% of scroll fades the video to black
+        if (progress > 0.8) {
+          const fadeProgress = (progress - 0.8) / 0.15; // Fades from 80% to 95%
+          crowFade.style.opacity = Math.min(1, fadeProgress);
+        } else {
+          crowFade.style.opacity = 0;
+        }
+        
+        // Reveal the hero section right as the video is fully black
+        if (progress > 0.95) {
+          const heroProgress = (progress - 0.95) / 0.05; // Fades in during the last 5%
+          mainHero.style.opacity = Math.min(1, heroProgress);
+          if (heroProgress > 0.5) {
+            mainHero.style.pointerEvents = 'auto';
+            crowContainer.style.pointerEvents = 'none';
+          }
+        } else {
+          mainHero.style.opacity = 0;
+          mainHero.style.pointerEvents = 'none';
+          crowContainer.style.pointerEvents = 'auto';
+        }
+        
+        isScrolling = false;
+      };
+      
+      window.addEventListener('scroll', () => {
+        if (!isScrolling) {
+          window.requestAnimationFrame(updateScroll);
+          isScrolling = true;
+        }
+      });
+      // Initial state
+      updateScroll();
+    }
   })();
 </script>
 </body>
