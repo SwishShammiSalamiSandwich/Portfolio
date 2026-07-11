@@ -115,6 +115,23 @@
   #crow-container video { width: 100%; height: 100%; object-fit: cover; }
   #crow-fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
 
+  #scroll-prompt {
+    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+    color: var(--paper); opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease;
+    z-index: 20; text-align: center;
+  }
+  #scroll-prompt.is-visible { 
+    animation: promptDrop 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite; 
+  }
+  @keyframes promptDrop {
+    0% { transform: translate(-50%, -15px); opacity: 0; }
+    30% { transform: translate(-50%, 0); opacity: 1; }
+    70% { transform: translate(-50%, 15px); opacity: 0; }
+    100% { transform: translate(-50%, 15px); opacity: 0; }
+  }
+
   /* ================= HERO ================= */
   .hero{
     min-height:100svh;
@@ -489,6 +506,7 @@
     <video src="assets/crow.mp4" id="crow-video" muted playsinline preload="auto"></video>
     <div id="crow-fade"></div>
   </div>
+  <div id="scroll-prompt">SCROLL DOWN</div>
 </div>
 
 <!-- ============ HERO ============ -->
@@ -1139,9 +1157,24 @@
       let isAnimating = true;
       let isReversing = false;
       let lastReverseTime = 0;
+      
+      let scrollTimer;
+      const resetScrollTimer = () => {
+        clearTimeout(scrollTimer);
+        const prompt = document.getElementById('scroll-prompt');
+        if (prompt) prompt.classList.remove('is-visible');
+        
+        if (!isFinished) {
+          scrollTimer = setTimeout(() => {
+            if (prompt && !isFinished) prompt.classList.add('is-visible');
+          }, 7000);
+        }
+      };
+      resetScrollTimer();
 
       const advancePlayback = (delta) => {
         if (isFinished || !crowVideo.duration) return;
+        resetScrollTimer();
         if (delta > 0) {
           // Scroll down: Play forward
           isReversing = false;
@@ -1214,6 +1247,10 @@
             
             if (crowVideo.currentTime >= crowVideo.duration - 0.5 && !isReversing) {
               isFinished = true;
+              clearTimeout(scrollTimer);
+              const prompt = document.getElementById('scroll-prompt');
+              if (prompt) prompt.style.display = 'none';
+              
               document.documentElement.classList.remove('no-scroll');
               document.body.classList.remove('no-scroll');
               
