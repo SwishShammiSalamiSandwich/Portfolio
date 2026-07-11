@@ -1146,9 +1146,9 @@
           // Scroll down: Play forward
           isReversing = false;
           if (crowVideo.currentTime < targetPlayTime) {
-            targetPlayTime = Math.max(targetPlayTime, crowVideo.currentTime + 3);
+            targetPlayTime = Math.max(targetPlayTime, crowVideo.currentTime + 1.5);
           } else {
-            targetPlayTime = crowVideo.currentTime + 3;
+            targetPlayTime = crowVideo.currentTime + 1.5;
           }
           targetPlayTime = Math.min(crowVideo.duration, targetPlayTime);
           if (crowVideo.paused) crowVideo.play();
@@ -1156,9 +1156,9 @@
           // Scroll up: Reverse backward
           isReversing = true;
           if (crowVideo.currentTime > targetPlayTime) {
-            targetPlayTime = Math.min(targetPlayTime, crowVideo.currentTime - 3);
+            targetPlayTime = Math.min(targetPlayTime, crowVideo.currentTime - 1.5);
           } else {
-            targetPlayTime = Math.max(0, crowVideo.currentTime - 3);
+            targetPlayTime = Math.max(0, crowVideo.currentTime - 1.5);
           }
           if (!crowVideo.paused) crowVideo.pause();
           lastReverseTime = performance.now();
