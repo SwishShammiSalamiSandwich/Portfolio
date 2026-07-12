@@ -900,7 +900,7 @@
 <div id="intro-orchestrator">
   <!-- ============ CROW VIDEO ============ -->
   <div id="crow-container">
-    <video src="assets/crow.mp4" id="crow-video" muted playsinline preload="auto"></video>
+    <video src="assets/crow.mp4" id="crow-video" playsinline preload="auto"></video>
     <div id="crow-fade"></div>
   </div>
   <div id="scroll-prompt">SCROLL DOWN</div>
@@ -1680,7 +1680,7 @@
             targetPlayTime = crowVideo.currentTime + 1.0;
           }
           targetPlayTime = Math.min(crowVideo.duration, targetPlayTime);
-          if (crowVideo.paused) crowVideo.play();
+          if (crowVideo.paused) crowVideo.play().catch(e => console.log('Autoplay prevented', e));
         } else if (delta < 0) {
           // Scroll up: Reverse backward
           isReversing = true;
@@ -1763,7 +1763,8 @@
                 }
               }, 1200);
               
-              crowVideo.play();
+              crowVideo.muted = true;
+              crowVideo.play().catch(e => console.log('Autoplay prevented', e));
               crowVideo.loop = true;
               
               window.removeEventListener('wheel', handleWheel);
