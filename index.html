@@ -660,7 +660,7 @@
   .lightbox-nav:hover { opacity: 1; color: var(--signal); }
   .lightbox-prev { left: 20px; }
   .lightbox-next { right: 20px; }
-  .lightbox video{max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .lightbox video, .lightbox img{max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);}
   @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
   /* ================= TOOLS MARQUEE ================= */
@@ -1139,6 +1139,31 @@
 
         <!-- Slide 6 -->
         <div class="c-slide">
+          <div class="c-slide-img expand-on-hover" onclick="openLightboxVideo(['assets/milton.png', 'assets/plane.png', 'assets/stage.mp4', 'assets/IPL.mp4', 'assets/smoke.png'])" style="cursor: pointer;">
+            <div class="c-watermark" style="z-index: 3;">PROACTIVE</div>
+            <div class="split-thumb" style="display: flex; gap: 2px; width: 100%; height: 100%; z-index: 1;">
+              <img src="assets/milton.png" style="flex:1; object-fit:cover; width:20%; height:100%;">
+              <img src="assets/plane.png" style="flex:1; object-fit:cover; width:20%; height:100%;">
+              <video src="assets/stage.mp4#t=1" muted playsinline loop autoplay style="flex:1; object-fit:cover; width:20%; height:100%;"></video>
+              <video src="assets/IPL.mp4#t=1" muted playsinline loop autoplay style="flex:1; object-fit:cover; width:20%; height:100%;"></video>
+              <img src="assets/smoke.png" style="flex:1; object-fit:cover; width:20%; height:100%;">
+            </div>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:4; border-radius:6px;">
+              <span>CLICK TO VIEW</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>PITCH_WORK<br>Concepts</span></div>
+          </div>
+          <div class="c-slide-text-placeholder">Proactive / Pitch Work</div>
+          <div class="c-slide-text">
+            <div class="c-tag">Concepts / Pitching</div>
+            <h3 class="c-title">PROACTIVE / PITCH WORK</h3>
+            <p class="c-desc">Exploratory visual concepts, generative stage designs, and speculative campaigns created for pitches and internal reviews.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <div class="c-foot"><span class="chip">Pitch</span><span class="chip">Concepts</span></div>
+          </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="c-slide">
           <a href="https://www.youtube.com/watch?v=pfsxUl7KYdc" target="_blank" class="c-slide-img expand-on-hover" style="display:block; text-decoration:none;">
             <div class="c-watermark">PRODUCTION</div>
             <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()" style="z-index: 1;">
@@ -1154,7 +1179,7 @@
           </div>
         </div>
 
-        <!-- Slide 7 -->
+        <!-- Slide 8 -->
         <div class="c-slide">
           <div class="c-slide-img">
             <div class="c-watermark">R&amp;D PIPELINE</div>
@@ -1174,7 +1199,7 @@
       <!-- Navigation & Progress -->
       <div class="c-nav-btn c-nav-prev" onclick="moveCarousel(-1)">←</div>
       <div class="c-nav-btn c-nav-next" onclick="moveCarousel(1)">→</div>
-      <div class="c-counter" id="c-counter">01 / 07</div>
+      <div class="c-counter" id="c-counter">01 / 08</div>
       <div class="c-progress-bar" id="c-progress"></div>
       <div class="c-scroll-cue" id="c-scroll-cue">SCROLL TO CONTINUE ↓</div>
     </div>
@@ -1185,8 +1210,9 @@
       <div class="c-jump-item" onclick="jumpCarousel(2)">Independence</div>
       <div class="c-jump-item" onclick="jumpCarousel(3)">Celebrity Work</div>
       <div class="c-jump-item" onclick="jumpCarousel(4)">Other Brand Works</div>
-      <div class="c-jump-item" onclick="jumpCarousel(5)">Music Video</div>
-      <div class="c-jump-item" onclick="jumpCarousel(6)">AI VFX &amp; Green-Screen</div>
+      <div class="c-jump-item" onclick="jumpCarousel(5)">Proactive / Pitch Work</div>
+      <div class="c-jump-item" onclick="jumpCarousel(6)">Music Video</div>
+      <div class="c-jump-item" onclick="jumpCarousel(7)">AI VFX &amp; Green-Screen</div>
     </div>
   </div>
 </section>
@@ -1224,6 +1250,7 @@
   <div class="lightbox-nav lightbox-prev" id="lightboxPrev" style="display:none;">←</div>
   <div class="lightbox-nav lightbox-next" id="lightboxNext" style="display:none;">→</div>
   <video id="lightboxVideo" src="" controls style="display:none;"></video>
+  <img id="lightboxImg" src="" style="display:none;">
 </div>
 
 
@@ -1849,6 +1876,7 @@
     const lightbox = document.getElementById('lightbox');
     const lbClose = document.getElementById('lightboxClose');
     const lbVideo = document.getElementById('lightboxVideo');
+    const lbImg = document.getElementById('lightboxImg');
     const lbPrev = document.getElementById('lightboxPrev');
     const lbNext = document.getElementById('lightboxNext');
 
@@ -1867,9 +1895,23 @@
     };
     
     const updateLightboxContent = () => {
-      lbVideo.style.display = 'block';
-      lbVideo.src = currentPlaylist[currentIndex];
-      lbVideo.play().catch(e => console.log('Auto-play prevented', e));
+      const src = currentPlaylist[currentIndex];
+      const isVideo = src.endsWith('.mp4');
+      
+      lbVideo.style.display = 'none';
+      if (lbImg) lbImg.style.display = 'none';
+      lbVideo.pause();
+
+      if (isVideo) {
+        lbVideo.src = src;
+        lbVideo.style.display = 'block';
+        lbVideo.play().catch(e => console.log('Auto-play prevented', e));
+      } else {
+        if (lbImg) {
+          lbImg.src = src;
+          lbImg.style.display = 'block';
+        }
+      }
       
       if (currentPlaylist.length > 1) {
         lbPrev.style.display = 'block';
@@ -1901,6 +1943,7 @@
         lightbox.classList.remove('open');
         lbVideo.pause();
         lbVideo.src = '';
+        if (lbImg) lbImg.src = '';
         currentPlaylist = [];
       });
     }
