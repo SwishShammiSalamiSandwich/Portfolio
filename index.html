@@ -319,38 +319,100 @@
     .t-row.is-collapsed .t-tc { transform: translate(0, 0) scale(1.5); text-align: center; }
   }
 
-  /* ================= CAROUSEL ================= */
+  /* ================= COVERFLOW CAROUSEL ================= */
   .carousel-wrap {
     position: relative;
     width: 100%;
     margin-top: 40px;
-    border: 1px solid var(--line);
-    background: var(--ink);
-  }
-  .carousel-track {
+    height: 600px;
+    overflow: hidden;
+    perspective: 1200px;
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    width: 100%;
+    align-items: center;
+    justify-content: center;
   }
-  .carousel-track::-webkit-scrollbar { display: none; }
+  @media (max-width:900px) { .carousel-wrap { height: 500px; } }
+  
+  .carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
   
   .c-slide {
-    flex: 0 0 100%;
-    width: 100%;
-    scroll-snap-align: center;
-    position: relative;
-    padding: 80px 60px 100px 60px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(800px, 90vw);
+    height: 520px;
+    margin-left: calc(-1 * min(400px, 45vw));
+    margin-top: -260px;
+    background: var(--ink);
+    border: 1px solid var(--line);
     display: flex;
     flex-direction: column;
-    justify-content: center;
     overflow: hidden;
-    min-height: 440px;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, filter 0.8s ease;
+    will-change: transform, opacity, filter;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 0, -600px) rotateY(0);
   }
-  @media (max-width:640px) { .c-slide { padding: 40px 24px 70px 24px; min-height: 360px; } }
+  @media (max-width:900px) {
+    .c-slide { height: 420px; margin-top: -210px; }
+  }
+  
+  .c-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0) rotateY(0);
+    z-index: 10;
+    filter: brightness(1);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  }
+  .c-slide.prev-1 {
+    opacity: 0.5;
+    transform: translate3d(-30%, 0, -200px) rotateY(15deg);
+    z-index: 5;
+    filter: brightness(0.4);
+  }
+  .c-slide.next-1 {
+    opacity: 0.5;
+    transform: translate3d(30%, 0, -200px) rotateY(-15deg);
+    z-index: 5;
+    filter: brightness(0.4);
+  }
+  .c-slide.prev-2 {
+    opacity: 0.15;
+    transform: translate3d(-55%, 0, -400px) rotateY(25deg);
+    z-index: 4;
+    filter: brightness(0.2);
+  }
+  .c-slide.next-2 {
+    opacity: 0.15;
+    transform: translate3d(55%, 0, -400px) rotateY(-25deg);
+    z-index: 4;
+    filter: brightness(0.2);
+  }
+  
+  .c-slide-img {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: var(--ink-2);
+  }
+  .c-slide-img img, .c-slide-img video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.25) contrast(1.05);
+    transition: filter 0.4s ease;
+  }
+  .c-slide.active .c-slide-img img, .c-slide.active .c-slide-img video {
+    filter: grayscale(0) contrast(1.05);
+  }
   
   .c-watermark {
     position: absolute;
@@ -358,13 +420,45 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(80px, 18vw, 240px);
-    color: rgba(255, 255, 255, 0.02);
+    font-size: clamp(60px, 15vw, 160px);
+    color: rgba(255, 255, 255, 0.04);
     white-space: nowrap;
     z-index: 0;
     pointer-events: none;
     user-select: none;
   }
+  
+  .c-slide-text {
+    flex: 1;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  @media (max-width:900px) { .c-slide-text { padding: 20px 24px; } }
+  .c-slide.active .c-slide-text { opacity: 1; transition-delay: 0.2s; }
+  
+  .c-slide-text-placeholder {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    background: var(--ink);
+  }
+  .c-slide.active .c-slide-text-placeholder { opacity: 0; pointer-events: none; }
   
   .c-content {
     position: relative;
@@ -377,26 +471,26 @@
     color: var(--signal);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
   .c-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 6vw, 64px);
+    font-size: clamp(32px, 5vw, 48px);
     line-height: 0.95;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     letter-spacing: 0.02em;
     color: var(--paper);
   }
   .c-desc {
     color: var(--paper-dim);
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 14px;
+    line-height: 1.6;
     max-width: 600px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
   .c-foot {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
   }
   
@@ -413,7 +507,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
     transition: all 0.3s ease;
     font-family: 'JetBrains Mono', monospace;
     font-size: 18px;
@@ -421,7 +515,7 @@
   .c-nav-btn:hover { background: var(--signal); border-color: var(--signal); }
   .c-nav-prev { left: -24px; }
   .c-nav-next { right: -24px; }
-  @media (max-width:900px) {
+  @media (max-width:950px) {
     .c-nav-prev { left: 12px; }
     .c-nav-next { right: 12px; }
   }
@@ -433,7 +527,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: var(--dim);
-    z-index: 10;
+    z-index: 20;
     letter-spacing: 0.1em;
   }
   
@@ -444,8 +538,29 @@
     height: 2px;
     background: var(--signal);
     width: 0%;
-    z-index: 10;
+    z-index: 20;
     transition: width 0.3s ease;
+  }
+  
+  .c-scroll-cue {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--signal);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    z-index: 20;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .c-scroll-cue.show { opacity: 1; bottom: 20px; animation: gentleBounce 2s infinite; }
+  @keyframes gentleBounce {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -6px); }
   }
   
   .c-jump-list {
@@ -454,6 +569,7 @@
     gap: 20px;
     margin-top: 24px;
     padding: 0 4px;
+    justify-content: center;
   }
   .c-jump-item {
     font-family: 'JetBrains Mono', monospace;
@@ -740,7 +856,7 @@
     <li data-target="#jio-sec"><span class="dot"></span><span class="label">Case Study</span></li>
     <li data-target="#work-sec"><span class="dot"></span><span class="label">Selected Work</span></li>
     <li data-target="#spotlight-sec"><span class="dot"></span><span class="label">Anandam</span></li>
-    <li data-target="#gallery-sec"><span class="dot"></span><span class="label">Gallery</span></li>
+
     <li data-target="#testimonials-sec"><span class="dot"></span><span class="label">Testimonials</span></li>
     <li data-target="#prior-sec"><span class="dot"></span><span class="label">Prior Credit</span></li>
     <li data-target="#beyond-sec"><span class="dot"></span><span class="label">Beyond The Reel</span></li>
@@ -884,12 +1000,17 @@
       <h2 class="sec-title">Brands, films, and everything <em>between.</em></h2>
     </div>
 
-    <div class="carousel-wrap reveal-right" id="work-carousel">
+    <div class="carousel-wrap" id="work-carousel">
       <div class="carousel-track" id="c-track">
+        
         <!-- Slide 1 -->
         <div class="c-slide">
-          <div class="c-watermark">STORYBOARDING</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">STORYBOARDING</div>
+            <img src="assets/tripura.png" alt="Feature film storyboard frame" onerror="this.remove()">
+          </div>
+          <div class="c-slide-text-placeholder">Confidential Feature Film</div>
+          <div class="c-slide-text">
             <div class="c-tag">Film / Storyboarding</div>
             <h3 class="c-title">CONFIDENTIAL FEATURE FILM</h3>
             <p class="c-desc">64 AI-generated storyboard shots turned a script into a pitch-ready draft in two months — shortlisted by two of three production studios it was pitched to.</p>
@@ -899,8 +1020,12 @@
         
         <!-- Slide 2 -->
         <div class="c-slide">
-          <div class="c-watermark">REBRAND</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">REBRAND</div>
+            <img src="assets/aeroplane-rice.jpg" alt="Aeroplane Rice rebrand concept" onerror="this.remove()">
+          </div>
+          <div class="c-slide-text-placeholder">Aeroplane Rice</div>
+          <div class="c-slide-text">
             <div class="c-tag">Brand / Rebrand</div>
             <h3 class="c-title">AEROPLANE RICE</h3>
             <p class="c-desc">Full rebrand pitch — logo, packaging system, colour palette, and go-to-market direction, built and iterated with AI-generated concept art.</p>
@@ -910,8 +1035,12 @@
 
         <!-- Slide 3 -->
         <div class="c-slide">
-          <div class="c-watermark">CAMPAIGN</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">CAMPAIGN</div>
+            <video src="assets/independence.mp4#t=1" muted playsinline loop autoplay></video>
+          </div>
+          <div class="c-slide-text-placeholder">Independence</div>
+          <div class="c-slide-text">
             <div class="c-tag">FMCG Campaign</div>
             <h3 class="c-title">INDEPENDENCE</h3>
             <p class="c-desc">Festive, youth-facing campaign concepting plus a dedicated Independence Day advertisement — dozens of AI-generated tonal variations, narrowed with the brand team.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
@@ -921,8 +1050,12 @@
 
         <!-- Slide 4 -->
         <div class="c-slide">
-          <div class="c-watermark">POSITIONING</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">POSITIONING</div>
+            <img src="assets/celebrity-work.jpg" alt="Celebrity Work brand deck visual" onerror="this.remove()">
+          </div>
+          <div class="c-slide-text-placeholder">Celebrity Work</div>
+          <div class="c-slide-text">
             <div class="c-tag">Skincare / Positioning</div>
             <h3 class="c-title">CELEBRITY WORK</h3>
             <p class="c-desc">Brand positioning and presentation — where the brand sits, what it should look like, and a campaign plan to get there.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
@@ -932,8 +1065,12 @@
 
         <!-- Slide 5 -->
         <div class="c-slide">
-          <div class="c-watermark">PRODUCTION</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">PRODUCTION</div>
+            <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()">
+          </div>
+          <div class="c-slide-text-placeholder">Music Video</div>
+          <div class="c-slide-text">
             <div class="c-tag">Live Production</div>
             <h3 class="c-title">MUSIC VIDEO</h3>
             <p class="c-desc">Produced and publicly released, with hands-on involvement from pre-production planning through the on-set shoot to post-production edit.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
@@ -943,14 +1080,19 @@
 
         <!-- Slide 6 -->
         <div class="c-slide">
-          <div class="c-watermark">R&amp;D PIPELINE</div>
-          <div class="c-content">
+          <div class="c-slide-img">
+            <div class="c-watermark">R&amp;D PIPELINE</div>
+            <img src="assets/ai-vfx-testing.jpg" alt="AI VFX & Green-Screen Testing" onerror="this.remove()">
+          </div>
+          <div class="c-slide-text-placeholder">AI VFX &amp; Green-Screen</div>
+          <div class="c-slide-text">
             <div class="c-tag">R&amp;D / Pipeline</div>
             <h3 class="c-title">AI VFX &amp; GREEN-SCREEN</h3>
             <p class="c-desc">Evaluated generative pipelines for background replacement and compositing — strong on simple fixes, inconsistent on complex lighting and edge work. Findings documented for the wider team.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
             <div class="c-foot"><span class="chip">Compositing</span><span class="chip">Documentation</span></div>
           </div>
         </div>
+
       </div>
 
       <!-- Navigation & Progress -->
@@ -958,6 +1100,7 @@
       <div class="c-nav-btn c-nav-next" onclick="moveCarousel(1)">→</div>
       <div class="c-counter" id="c-counter">01 / 06</div>
       <div class="c-progress-bar" id="c-progress"></div>
+      <div class="c-scroll-cue" id="c-scroll-cue">SCROLL TO CONTINUE ↓</div>
     </div>
     
     <div class="c-jump-list reveal" id="c-jump-list">
@@ -998,64 +1141,6 @@
   </div>
 </section>
 
-<!-- ============ WORK GALLERY ============ -->
-<section class="sec" id="gallery-sec" style="padding-top:0;">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="label">The Reel, In Stills</div>
-      <h2 class="sec-title">Actual <em>output</em>, not just descriptions.</h2>
-      <p class="sec-desc">Each tile is wired for a real image — drop yours in and the placeholder disappears automatically.</p>
-    </div>
-
-    <div class="gallery-grid" id="gallery">
-      <!-- Tile: replace the src below with your own image (file path or full URL) -->
-      <div class="g-tile" data-caption="Anandam" data-tagline="STAGE &amp; KEY ART">
-        <img src="assets/anandam-01.jpg" alt="Anandam stage visual" onerror="this.remove()">
-        <div class="g-placeholder"><div class="plus">＋</div><span>ANANDAM-01.JPG<br>Stage design / key art</span></div>
-        <div class="g-caption"><b>Anandam</b><span>STAGE &amp; KEY ART</span></div>
-      </div>
-
-      <div class="g-tile no-lightbox expand-on-hover" data-caption="Feature Film" data-tagline="STORYBOARD FRAME">
-        <img src="assets/tripura.png" alt="Feature film storyboard frame" onerror="this.remove()">
-        <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; text-align:center; padding:20px;">CONTACT TO KNOW MORE</div>
-        <div class="g-placeholder"><div class="plus">＋</div><span>TRIPURA.PNG<br>One of 64 shots</span></div>
-        <div class="g-caption"><b>Feature Film</b><span>STORYBOARD FRAME</span></div>
-      </div>
-
-      <div class="g-tile" data-caption="AI VFX & Green-Screen Testing" data-tagline="DOCUMENTATION / COMPOSITING">
-        <img src="assets/aeroplane-rice.jpg" alt="AI VFX & Green-Screen Testing" onerror="this.remove()">
-        <div class="g-placeholder"><div class="plus">＋</div><span>AI-VFX-TESTING.JPG<br>Documentation / Compositing</span></div>
-        <div class="g-caption"><b>AI VFX &amp; Green-Screen Testing</b><span>DOCUMENTATION / COMPOSITING</span></div>
-      </div>
-
-      <div class="g-tile" data-video="assets/independence.mp4" data-caption="Independence" data-tagline="CAMPAIGN KEY ART">
-        <video src="assets/independence.mp4#t=1" muted playsinline></video>
-        <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2;">CLICK TO PLAY</div>
-        <div class="g-placeholder"><div class="plus">＋</div><span>INDEPENDENCE.MP4<br>Festive campaign concept</span></div>
-        <div class="g-caption"><b>Independence</b><span>CAMPAIGN KEY ART</span></div>
-      </div>
-
-      <div class="g-tile" data-caption="Celebrity Work" data-tagline="BRAND POSITIONING">
-        <img src="assets/celebrity-work.jpg" alt="Celebrity Work brand deck visual" onerror="this.remove()">
-        <div class="g-placeholder"><div class="plus">＋</div><span>CELEBRITY-WORK.JPG<br>Positioning deck visual</span></div>
-        <div class="g-caption"><b>Celebrity Work</b><span>BRAND POSITIONING</span></div>
-      </div>
-
-      <a href="https://www.youtube.com/watch?v=pfsxUl7KYdc" target="_blank" class="g-tile no-lightbox" data-caption="Music Video" data-tagline="ON-SET / STILL" style="display:block; text-decoration:none;">
-        <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()">
-        <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2;">CLICK TO WATCH</div>
-        <div class="g-placeholder"><div class="plus">＋</div><span>MUSIC-VIDEO.PNG<br>Production still</span></div>
-        <div class="g-caption"><b>Music Video</b><span>ON-SET / STILL</span></div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-close" id="lightboxClose">CLOSE ✕</div>
-  <img id="lightboxImg" src="" alt="" style="display:none;">
-  <video id="lightboxVideo" src="" controls style="display:none;"></video>
-</div>
 
 <!-- ============ TOOLS MARQUEE ============ -->
 <div class="marquee-wrap">
@@ -1680,7 +1765,7 @@
 
     const updateNavDot = () => {
       const dot = document.getElementById('v-nav-dot');
-      if (!dot || navItems.length === 0 || document.body.classList.contains('no-scroll')) return;
+      if (!dot || navItems.length === 0 || document.body.classList.contains('no-scroll') || document.body.classList.contains('work-carousel-locked')) return;
       
       const scrollPct = window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
       const startY = navItems[0].offsetTop + (navItems[0].offsetHeight / 2);
@@ -1696,7 +1781,7 @@
     setTimeout(updateNavDot, 1000);
   })();
 
-  // ============ SELECTED WORK CAROUSEL ============
+  // ============ SELECTED WORK CAROUSEL (COVERFLOW) ============
   (function(){
     const track = document.getElementById('c-track');
     const slides = document.querySelectorAll('.c-slide');
@@ -1704,16 +1789,26 @@
     const progress = document.getElementById('c-progress');
     const jumpItems = document.querySelectorAll('.c-jump-item');
     const workSec = document.getElementById('work-sec');
+    const scrollCue = document.getElementById('c-scroll-cue');
+    const vNavDot = document.getElementById('v-nav-dot');
     
     if(!track || !slides.length) return;
     
     let activeIndex = 0;
+    let isLocked = false;
     let isWorkSecVisible = false;
+    let wheelCooldown = false;
     
     const updateCarouselUI = () => {
-      const scrollX = track.scrollLeft;
-      const slideWidth = track.clientWidth;
-      activeIndex = Math.round(scrollX / Math.max(1, slideWidth));
+      slides.forEach((slide, i) => {
+        slide.className = 'c-slide'; // reset
+        if (i === activeIndex) slide.classList.add('active');
+        else if (i === activeIndex - 1) slide.classList.add('prev-1');
+        else if (i === activeIndex + 1) slide.classList.add('next-1');
+        else if (i === activeIndex - 2) slide.classList.add('prev-2');
+        else if (i === activeIndex + 2) slide.classList.add('next-2');
+        else slide.classList.add('slide-hidden');
+      });
       
       const num = (activeIndex + 1).toString().padStart(2, '0');
       const total = slides.length.toString().padStart(2, '0');
@@ -1725,32 +1820,98 @@
       jumpItems.forEach((item, i) => {
         item.classList.toggle('active', i === activeIndex);
       });
+      
+      if (activeIndex === slides.length - 1) {
+        scrollCue.classList.add('show');
+      } else {
+        scrollCue.classList.remove('show');
+      }
+      
+      // Internal vNav Dot calculation
+      if (isLocked && vNavDot) {
+        const targetLi = document.querySelector('li[data-target="#work-sec"]');
+        if (targetLi) {
+          const startY = targetLi.offsetTop + (targetLi.offsetHeight / 2);
+          const nextLi = targetLi.nextElementSibling;
+          const endY = nextLi ? (nextLi.offsetTop + nextLi.offsetHeight / 2) : startY + 40;
+          
+          const internalProgress = activeIndex / (slides.length - 1);
+          // Only move halfway to the next dot so it clearly shows we are IN this section
+          const currentY = startY + ((endY - startY) * 0.8 * internalProgress);
+          vNavDot.style.top = (currentY - 4) + 'px';
+        }
+      }
     };
     
-    track.addEventListener('scroll', updateCarouselUI, { passive: true });
-    window.addEventListener('resize', updateCarouselUI, { passive: true });
-    
     window.moveCarousel = (dir) => {
-      const slideWidth = track.clientWidth;
-      let newIndex = activeIndex + dir;
-      newIndex = Math.max(0, Math.min(newIndex, slides.length - 1));
-      track.scrollTo({ left: newIndex * slideWidth, behavior: 'smooth' });
+      activeIndex += dir;
+      activeIndex = Math.max(0, Math.min(activeIndex, slides.length - 1));
+      updateCarouselUI();
     };
     
     window.jumpCarousel = (index) => {
-      const slideWidth = track.clientWidth;
-      track.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+      activeIndex = index;
+      updateCarouselUI();
+    };
+    
+    const handleWheel = (e) => {
+      if (!isLocked) return;
+      e.preventDefault();
+      
+      if (wheelCooldown) return;
+      
+      const delta = Math.sign(e.deltaY);
+      if (delta === 0) return;
+      
+      if (activeIndex === 0 && delta < 0) {
+        unlockScroll();
+        return;
+      }
+      if (activeIndex === slides.length - 1 && delta > 0) {
+        unlockScroll();
+        return;
+      }
+      
+      wheelCooldown = true;
+      window.moveCarousel(delta);
+      setTimeout(() => { wheelCooldown = false; }, 800); // Throttling trackpad
+    };
+    
+    const lockScroll = () => {
+      if (isLocked) return;
+      isLocked = true;
+      document.body.classList.add('work-carousel-locked');
+      document.body.style.overflow = 'hidden';
+      workSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      updateCarouselUI();
+    };
+    
+    const unlockScroll = () => {
+      if (!isLocked) return;
+      isLocked = false;
+      document.body.classList.remove('work-carousel-locked');
+      document.body.style.overflow = '';
+      window.removeEventListener('wheel', handleWheel);
     };
     
     const io = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         isWorkSecVisible = entry.isIntersecting;
+        
+        // Lock when section is mostly visible
+        if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+           lockScroll();
+        } else if (!entry.isIntersecting) {
+           unlockScroll();
+        }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: [0, 0.2, 0.6, 0.8, 1.0] });
+    
     if (workSec) io.observe(workSec);
     
     document.addEventListener('keydown', (e) => {
-      if(isWorkSecVisible) {
+      if(isWorkSecVisible || isLocked) {
         if(e.key === 'ArrowRight') {
           e.preventDefault();
           window.moveCarousel(1);
@@ -1761,7 +1922,7 @@
       }
     });
     
-    setTimeout(updateCarouselUI, 100);
+    updateCarouselUI();
   })();
 </script>
 </body>
