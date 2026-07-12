@@ -1763,6 +1763,18 @@
       
       li.addEventListener('click', () => {
         if (section) {
+          if (window.unlockCarouselScroll) window.unlockCarouselScroll();
+          
+          if (targetSelector !== '#work-sec') {
+             window.isNavigating = true;
+             clearTimeout(window.navigatingTimeout);
+             window.navigatingTimeout = setTimeout(() => {
+                window.isNavigating = false;
+             }, 1200);
+          } else {
+             window.isNavigating = false;
+          }
+          
           section.scrollIntoView({ behavior: 'smooth' });
         }
       });
@@ -1928,6 +1940,7 @@
       document.body.style.overflow = '';
       window.removeEventListener('wheel', handleWheel);
     };
+    window.unlockCarouselScroll = unlockScroll;
     
     let previousRatio = 0;
     const io = new IntersectionObserver(entries => {
@@ -1942,7 +1955,9 @@
            
            // Only lock if it is centered AND we are scrolling deeper into the section
            if (isMostlyCentered && entry.intersectionRatio > previousRatio) {
-               lockScroll();
+               if (!window.isNavigating) {
+                 lockScroll();
+               }
            }
         } else {
            unlockScroll();
