@@ -1277,41 +1277,7 @@
     progress.style.width = pct + '%';
   });
 
-  // gallery lightbox — only opens for tiles that actually have a loaded image
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxVideo = document.getElementById('lightboxVideo');
-  document.querySelectorAll('.g-tile').forEach(tile => {
-    tile.addEventListener('click', (e) => {
-      if(tile.classList.contains('no-lightbox')) return;
-      const videoSrc = tile.getAttribute('data-video');
-      const img = tile.querySelector('img');
-      if(videoSrc){
-        lightboxImg.style.display = 'none';
-        lightboxVideo.style.display = 'block';
-        lightboxVideo.src = videoSrc;
-        lightboxVideo.play();
-        lightbox.classList.add('open');
-      } else if(img) {
-        lightboxVideo.style.display = 'none';
-        lightboxVideo.pause();
-        lightboxImg.style.display = 'block';
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt;
-        lightbox.classList.add('open');
-      }
-    });
-  });
-  const closeLightbox = () => {
-    lightbox.classList.remove('open');
-    setTimeout(() => {
-      lightboxVideo.pause();
-      lightboxVideo.src = "";
-    }, 400); // Wait for transition
-  };
-  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
-  window.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+
 
   const clockEl = document.getElementById('hud-clock');
   const start = Date.now();
