@@ -1181,9 +1181,13 @@
 
         <!-- Slide 8 -->
         <div class="c-slide">
-          <div class="c-slide-img">
+          <div class="c-slide-img expand-on-hover" onclick="openLightboxCompare('assets/VFXBefore.MOV', 'assets/VFXafter.mp4')" style="cursor: pointer;">
             <div class="c-watermark">R&amp;D PIPELINE</div>
-            <img src="assets/ai-vfx-testing.jpg" alt="AI VFX & Green-Screen Testing" onerror="this.remove()">
+            <video src="assets/VFXBefore.MOV#t=0.1" preload="metadata" style="width:100%; height:100%; object-fit:cover; border-radius:6px; z-index:1; position:relative;"></video>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:4; border-radius:6px;">
+              <span>CLICK TO COMPARE</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>VFX_BEFORE<br>Comparison</span></div>
           </div>
           <div class="c-slide-text-placeholder">AI VFX &amp; Green-Screen</div>
           <div class="c-slide-text">
@@ -1275,6 +1279,17 @@
   <div class="lightbox-nav lightbox-next" id="lightboxNext" style="display:none;">→</div>
   <video id="lightboxVideo" src="" controls style="display:none;"></video>
   <img id="lightboxImg" src="" style="display:none;">
+  
+  <div id="lightboxCompare" style="display:none; position:relative; max-width:90vw; max-height:90vh; width:100%; aspect-ratio:16/9;">
+    <video id="compareBefore" src="" muted playsinline loop style="display:block; width:100%; height:100%; object-fit:contain; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);"></video>
+    <video id="compareAfter" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; border-radius:4px; clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);"></video>
+    
+    <div id="compareLine" style="position:absolute; top:0; bottom:0; left:50%; width:2px; background:var(--signal); transform:translateX(-50%); pointer-events:none; display:flex; align-items:center; justify-content:center;">
+       <div style="width:30px; height:30px; background:var(--signal); border-radius:50%; color:var(--bg); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold;">↔</div>
+    </div>
+    
+    <input type="range" id="compareSlider" min="0" max="100" value="50" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; opacity:0; cursor:ew-resize;">
+  </div>
 </div>
 
 
@@ -1903,9 +1918,31 @@
     const lbImg = document.getElementById('lightboxImg');
     const lbPrev = document.getElementById('lightboxPrev');
     const lbNext = document.getElementById('lightboxNext');
+    
+    const lbCompare = document.getElementById('lightboxCompare');
+    const compBefore = document.getElementById('compareBefore');
+    const compAfter = document.getElementById('compareAfter');
+    const compSlider = document.getElementById('compareSlider');
+    const compLine = document.getElementById('compareLine');
 
     let currentPlaylist = [];
     let currentIndex = 0;
+    
+    if (compSlider) {
+      compSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        compAfter.style.clipPath = `polygon(0 0, ${val}% 0, ${val}% 100%, 0 100%)`;
+        compLine.style.left = `${val}%`;
+      });
+      
+      compBefore.addEventListener('play', () => compAfter.play());
+      compBefore.addEventListener('pause', () => compAfter.pause());
+      compBefore.addEventListener('timeupdate', () => {
+        if (Math.abs(compBefore.currentTime - compAfter.currentTime) > 0.1) {
+           compAfter.currentTime = compBefore.currentTime;
+        }
+      });
+    }
 
     window.openLightboxVideo = (sources) => {
       if (!Array.isArray(sources)) {
@@ -1918,12 +1955,38 @@
       lightbox.classList.add('open');
     };
     
+    window.openLightboxCompare = (beforeSrc, afterSrc) => {
+      lbVideo.style.display = 'none';
+      if(lbImg) lbImg.style.display = 'none';
+      lbPrev.style.display = 'none';
+      lbNext.style.display = 'none';
+      lbVideo.pause();
+      
+      lbCompare.style.display = 'block';
+      compBefore.src = beforeSrc;
+      compAfter.src = afterSrc;
+      
+      compSlider.value = 50;
+      compAfter.style.clipPath = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
+      compLine.style.left = `50%`;
+      
+      compBefore.play().catch(e => console.log(e));
+      compAfter.play().catch(e => console.log(e));
+      
+      lightbox.classList.add('open');
+    };
+    
     const updateLightboxContent = () => {
       const src = currentPlaylist[currentIndex];
-      const isVideo = src.endsWith('.mp4');
+      const isVideo = src.endsWith('.mp4') || src.endsWith('.MOV') || src.endsWith('.mov');
       
       lbVideo.style.display = 'none';
       if (lbImg) lbImg.style.display = 'none';
+      if (lbCompare) {
+        lbCompare.style.display = 'none';
+        compBefore.pause();
+        compAfter.pause();
+      }
       lbVideo.pause();
 
       if (isVideo) {
@@ -1968,6 +2031,13 @@
         lbVideo.pause();
         lbVideo.src = '';
         if (lbImg) lbImg.src = '';
+        if (lbCompare) {
+          lbCompare.style.display = 'none';
+          compBefore.pause();
+          compAfter.pause();
+          compBefore.src = '';
+          compAfter.src = '';
+        }
         currentPlaylist = [];
       });
     }
