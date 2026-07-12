@@ -1280,9 +1280,12 @@
   <video id="lightboxVideo" src="" controls style="display:none;"></video>
   <img id="lightboxImg" src="" style="display:none;">
   
-  <div id="lightboxCompare" style="display:none; position:relative; max-width:90vw; max-height:90vh;">
-    <video id="compareBefore" src="" muted playsinline loop style="display:block; max-width:90vw; max-height:90vh; width:auto; height:auto; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);"></video>
-    <video id="compareAfter" src="" muted playsinline loop style="position:absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; object-fit:cover; border-radius:4px; clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);"></video>
+  <div id="lightboxCompare" style="display:none; position:relative; width:90vw; max-width:calc(90vh * 9 / 16); aspect-ratio:9/16; overflow:hidden; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <!-- After video is base layer (bottom) -->
+    <video id="compareAfter" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>
+    
+    <!-- Before video sits on top -->
+    <video id="compareBefore" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; clip-path:inset(0 50% 0 0); -webkit-clip-path:inset(0 50% 0 0);"></video>
     
     <div id="compareLine" style="position:absolute; top:0; bottom:0; left:50%; width:2px; background:var(--signal); transform:translateX(-50%); pointer-events:none; display:flex; align-items:center; justify-content:center;">
        <div style="width:30px; height:30px; background:var(--signal); border-radius:50%; color:var(--bg); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold;">↔</div>
@@ -1931,16 +1934,16 @@
     if (compSlider) {
       compSlider.addEventListener('input', (e) => {
         const val = e.target.value;
-        compAfter.style.clipPath = `polygon(0 0, ${val}% 0, ${val}% 100%, 0 100%)`;
-        compAfter.style.webkitClipPath = `polygon(0 0, ${val}% 0, ${val}% 100%, 0 100%)`;
+        compBefore.style.clipPath = `inset(0 calc(100% - ${val}%) 0 0)`;
+        compBefore.style.webkitClipPath = `inset(0 calc(100% - ${val}%) 0 0)`;
         compLine.style.left = `${val}%`;
       });
       
-      compBefore.addEventListener('play', () => compAfter.play());
-      compBefore.addEventListener('pause', () => compAfter.pause());
-      compBefore.addEventListener('timeupdate', () => {
-        if (Math.abs(compBefore.currentTime - compAfter.currentTime) > 0.1) {
-           compAfter.currentTime = compBefore.currentTime;
+      compAfter.addEventListener('play', () => compBefore.play());
+      compAfter.addEventListener('pause', () => compBefore.pause());
+      compAfter.addEventListener('timeupdate', () => {
+        if (Math.abs(compAfter.currentTime - compBefore.currentTime) > 0.1) {
+           compBefore.currentTime = compAfter.currentTime;
         }
       });
     }
@@ -1968,12 +1971,12 @@
       compAfter.src = afterSrc;
       
       compSlider.value = 50;
-      compAfter.style.clipPath = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
-      compAfter.style.webkitClipPath = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
+      compBefore.style.clipPath = `inset(0 50% 0 0)`;
+      compBefore.style.webkitClipPath = `inset(0 50% 0 0)`;
       compLine.style.left = `50%`;
       
-      compBefore.play().catch(e => console.log(e));
       compAfter.play().catch(e => console.log(e));
+      compBefore.play().catch(e => console.log(e));
       
       lightbox.classList.add('open');
     };
