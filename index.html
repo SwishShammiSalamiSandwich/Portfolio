@@ -363,6 +363,10 @@
     .c-slide { height: 420px; margin-top: -210px; }
   }
   
+  .c-slide:has(.expand-on-hover:hover) {
+    overflow: visible !important;
+  }
+  
   .c-slide.active {
     opacity: 1;
     pointer-events: auto;
@@ -370,6 +374,9 @@
     z-index: 10;
     filter: brightness(1);
     box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  }
+  .c-slide.active:has(.expand-on-hover:hover) {
+    z-index: 100;
   }
   .c-slide.prev-1 {
     opacity: 0.5;
@@ -513,8 +520,8 @@
     font-size: 18px;
   }
   .c-nav-btn:hover { background: var(--signal); border-color: var(--signal); }
-  .c-nav-prev { left: -24px; }
-  .c-nav-next { right: -24px; }
+  .c-nav-prev { left: 24px; }
+  .c-nav-next { right: 24px; }
   @media (max-width:950px) {
     .c-nav-prev { left: 12px; }
     .c-nav-next { right: 12px; }
@@ -1005,9 +1012,14 @@
         
         <!-- Slide 1 -->
         <div class="c-slide">
-          <div class="c-slide-img">
+          <div class="c-slide-img expand-on-hover">
             <div class="c-watermark">STORYBOARDING</div>
-            <img src="assets/tripura.png" alt="Feature film storyboard frame" onerror="this.remove()">
+            <img src="assets/tripura-sb.jpg" alt="Storyboard for feature film" onerror="this.remove()" style="z-index: 1;">
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
+              <div class="plus" style="font-size:24px; margin-bottom:8px;">＋</div>
+              <span>TRIPURA-SB.JPG</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>TRIPURA-SB.JPG<br>AI-generated animatic frames</span></div>
           </div>
           <div class="c-slide-text-placeholder">Confidential Feature Film</div>
           <div class="c-slide-text">
@@ -1035,9 +1047,14 @@
 
         <!-- Slide 3 -->
         <div class="c-slide">
-          <div class="c-slide-img">
+          <div class="c-slide-img expand-on-hover">
             <div class="c-watermark">CAMPAIGN</div>
-            <video src="assets/independence.mp4#t=1" muted playsinline loop autoplay></video>
+            <video src="assets/independence.mp4#t=1" muted playsinline loop autoplay style="z-index: 1;"></video>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
+              <div class="plus" style="font-size:24px; margin-bottom:8px;">＋</div>
+              <span>INDEPENDENCE.MP4</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>INDEPENDENCE.MP4<br>Festive campaign concept</span></div>
           </div>
           <div class="c-slide-text-placeholder">Independence</div>
           <div class="c-slide-text">
@@ -1065,10 +1082,12 @@
 
         <!-- Slide 5 -->
         <div class="c-slide">
-          <div class="c-slide-img">
+          <a href="https://www.youtube.com/watch?v=pfsxUl7KYdc" target="_blank" class="c-slide-img expand-on-hover" style="display:block; text-decoration:none;">
             <div class="c-watermark">PRODUCTION</div>
-            <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()">
-          </div>
+            <img src="assets/music-video.png" alt="Music video production still" onerror="this.remove()" style="z-index: 1;">
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">CLICK TO WATCH</div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>MUSIC-VIDEO.PNG<br>Production still</span></div>
+          </a>
           <div class="c-slide-text-placeholder">Music Video</div>
           <div class="c-slide-text">
             <div class="c-tag">Live Production</div>
