@@ -1194,12 +1194,35 @@
           </div>
         </div>
 
+        <!-- Slide 9 -->
+        <div class="c-slide">
+          <div class="c-slide-img expand-on-hover" onclick="openLightboxVideo(['assets/story%20thumbnail.png', 'assets/story1.png', 'assets/story2.png'])" style="cursor: pointer;">
+            <div class="c-watermark" style="z-index: 3;">GENERATOR</div>
+            <div class="split-thumb" style="display: flex; gap: 2px; width: 100%; height: 100%; z-index: 1;">
+              <img src="assets/story%20thumbnail.png" style="flex:1; object-fit:cover; width:33.33%; height:100%;">
+              <img src="assets/story1.png" style="flex:1; object-fit:cover; width:33.33%; height:100%;">
+              <img src="assets/story2.png" style="flex:1; object-fit:cover; width:33.33%; height:100%;">
+            </div>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:4; border-radius:6px;">
+              <span>CLICK TO VIEW</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>STORYBOARD<br>AI Tool</span></div>
+          </div>
+          <div class="c-slide-text-placeholder">AI Storyboard Generator</div>
+          <div class="c-slide-text">
+            <div class="c-tag">Gen AI / Pre-Production</div>
+            <h3 class="c-title">AI STORYBOARD GENERATOR</h3>
+            <p class="c-desc">AI-powered tool that turns text scripts into structured, cinematic storyboards (scene breakdowns, camera angles, lighting, mood) in minutes instead of hours. Built with Python, Streamlit, and the Gemini Pro API, with a custom prompt-engineering layer for consistent output. Developed during my internship at Jio Creative Labs to speed up pre-production for media &amp; entertainment teams.</p>
+            <div class="c-foot"><span class="chip">Python</span><span class="chip">Gemini API</span></div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Navigation & Progress -->
       <div class="c-nav-btn c-nav-prev" onclick="moveCarousel(-1)">←</div>
       <div class="c-nav-btn c-nav-next" onclick="moveCarousel(1)">→</div>
-      <div class="c-counter" id="c-counter">01 / 08</div>
+      <div class="c-counter" id="c-counter">01 / 09</div>
       <div class="c-progress-bar" id="c-progress"></div>
       <div class="c-scroll-cue" id="c-scroll-cue">SCROLL TO CONTINUE ↓</div>
     </div>
@@ -1213,6 +1236,7 @@
       <div class="c-jump-item" onclick="jumpCarousel(5)">Proactive / Pitch Work</div>
       <div class="c-jump-item" onclick="jumpCarousel(6)">Music Video</div>
       <div class="c-jump-item" onclick="jumpCarousel(7)">AI VFX &amp; Green-Screen</div>
+      <div class="c-jump-item" onclick="jumpCarousel(8)">AI Storyboard Generator</div>
     </div>
   </div>
 </section>
