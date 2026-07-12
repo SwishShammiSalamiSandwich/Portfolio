@@ -639,6 +639,20 @@
   }
   .spot-list li:last-child{border-bottom:1px solid var(--line);}
   .spot-list b{color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px;}
+  
+  /* ================= LIGHTBOX ================= */
+  .lightbox{
+    position:fixed; inset:0; z-index:300; background:rgba(11,11,12,.70); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    display:none; align-items:center; justify-content:center; padding:40px;
+  }
+  .lightbox.open{display:flex; animation:fadeIn 0.3s forwards;}
+  .lightbox-close{
+    position:absolute; top:40px; right:40px; color:var(--paper); font-family:'JetBrains Mono',monospace; font-size:14px;
+    cursor:pointer; z-index:301; padding:10px; opacity:.7; transition:opacity .3s;
+  }
+  .lightbox-close:hover{opacity:1;}
+  .lightbox video{max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
   /* ================= TOOLS MARQUEE ================= */
   .marquee-wrap{border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:26px 0;}
@@ -1046,12 +1060,11 @@
 
         <!-- Slide 3 -->
         <div class="c-slide">
-          <div class="c-slide-img expand-on-hover">
+          <div class="c-slide-img expand-on-hover" onclick="openLightboxVideo('assets/independence.mp4')" style="cursor: pointer;">
             <div class="c-watermark">CAMPAIGN</div>
             <img src="assets/independence.png" alt="Independence Day campaign art" onerror="this.remove()" style="z-index: 1;">
-            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
-              <div class="plus" style="font-size:24px; margin-bottom:8px;">＋</div>
-              <span>INDEPENDENCE.MP4</span>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
+              <span>CLICK TO PLAY</span>
             </div>
             <div class="g-placeholder"><div class="plus">＋</div><span>INDEPENDENCE.MP4<br>Festive campaign concept</span></div>
           </div>
@@ -1158,6 +1171,12 @@
     </div>
   </div>
 </section>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lightboxClose">CLOSE ✕</div>
+  <video id="lightboxVideo" src="" controls style="display:none;"></video>
+</div>
 
 
 <!-- ============ TOOLS MARQUEE ============ -->
@@ -1763,6 +1782,28 @@
     window.addEventListener('resize', updateNavDot, { passive: true });
     // Initial call in case of mid-page reload
     setTimeout(updateNavDot, 1000);
+  })();
+
+  // ============ LIGHTBOX LOGIC ============
+  (function(){
+    const lightbox = document.getElementById('lightbox');
+    const lbClose = document.getElementById('lightboxClose');
+    const lbVideo = document.getElementById('lightboxVideo');
+
+    window.openLightboxVideo = (src) => {
+      lbVideo.style.display = 'block';
+      lbVideo.src = src;
+      lightbox.classList.add('open');
+      lbVideo.play().catch(e => console.log('Auto-play prevented', e));
+    };
+
+    if(lbClose) {
+      lbClose.addEventListener('click', () => {
+        lightbox.classList.remove('open');
+        lbVideo.pause();
+        lbVideo.src = '';
+      });
+    }
   })();
 
   // ============ SELECTED WORK CAROUSEL (COVERFLOW) ============
