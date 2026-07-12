@@ -1047,16 +1047,20 @@
         
         <!-- Slide 2 -->
         <div class="c-slide">
-          <div class="c-slide-img">
-            <div class="c-watermark">REBRAND</div>
-            <img src="assets/aeroplane-rice.jpg" alt="Aeroplane Rice rebrand concept" onerror="this.remove()">
+          <div class="c-slide-img expand-on-hover" onclick="openLightboxVideo('assets/royal.mp4')" style="cursor: pointer;">
+            <div class="c-watermark">CAMPAIGN</div>
+            <video src="assets/royal.mp4#t=1" muted playsinline loop autoplay style="z-index: 1;"></video>
+            <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
+              <span>CLICK TO PLAY</span>
+            </div>
+            <div class="g-placeholder"><div class="plus">＋</div><span>ROYAL.MP4<br>Brand concept</span></div>
           </div>
-          <div class="c-slide-text-placeholder">Aeroplane Rice</div>
+          <div class="c-slide-text-placeholder">Royal Enfield</div>
           <div class="c-slide-text">
-            <div class="c-tag">Brand / Rebrand</div>
-            <h3 class="c-title">AEROPLANE RICE</h3>
-            <p class="c-desc">Full rebrand pitch — logo, packaging system, colour palette, and go-to-market direction, built and iterated with AI-generated concept art.</p>
-            <div class="c-foot"><span class="chip">Identity</span><span class="chip">Packaging</span></div>
+            <div class="c-tag">Brand / Campaign</div>
+            <h3 class="c-title">ROYAL ENFIELD</h3>
+            <p class="c-desc">Dynamic brand campaign concept built with AI-generated visuals, focused on grit and heritage.</p>
+            <div class="c-foot"><span class="chip">Concept</span><span class="chip">Visuals</span></div>
           </div>
         </div>
 
@@ -1138,7 +1142,7 @@
     
     <div class="c-jump-list reveal" id="c-jump-list">
       <div class="c-jump-item active" onclick="jumpCarousel(0)">Confidential Feature Film</div>
-      <div class="c-jump-item" onclick="jumpCarousel(1)">Aeroplane Rice</div>
+      <div class="c-jump-item" onclick="jumpCarousel(1)">Royal Enfield</div>
       <div class="c-jump-item" onclick="jumpCarousel(2)">Independence</div>
       <div class="c-jump-item" onclick="jumpCarousel(3)">Celebrity Work</div>
       <div class="c-jump-item" onclick="jumpCarousel(4)">Music Video</div>
