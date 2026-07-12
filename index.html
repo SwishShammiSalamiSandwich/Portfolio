@@ -707,7 +707,7 @@
 
   /* Feature Film custom hover */
   .expand-on-hover { overflow: visible !important; }
-  .expand-on-hover img, .expand-on-hover .hover-overlay {
+  .expand-on-hover img, .expand-on-hover video, .expand-on-hover .hover-overlay {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
@@ -717,12 +717,14 @@
     transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
   .expand-on-hover:hover { z-index: 100; }
-  .expand-on-hover:hover img, .expand-on-hover:hover .hover-overlay {
-    width: 100% !important;
-    height: 180% !important;
-    transform: translate(-50%, -50%) scale(1.05) !important;
+  .expand-on-hover:hover img, .expand-on-hover:hover video, .expand-on-hover:hover .hover-overlay {
+    width: 115% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    object-fit: contain !important;
   }
-  .expand-on-hover:hover img {
+  .expand-on-hover:hover img, .expand-on-hover:hover video {
     box-shadow: 0 30px 60px rgba(0,0,0,0.8);
     border-radius: 6px;
     filter: grayscale(0) contrast(1.05) !important;
@@ -1062,7 +1064,7 @@
         <div class="c-slide">
           <div class="c-slide-img expand-on-hover" onclick="openLightboxVideo('assets/independence.mp4')" style="cursor: pointer;">
             <div class="c-watermark">CAMPAIGN</div>
-            <img src="assets/independence.png" alt="Independence Day campaign art" onerror="this.remove()" style="z-index: 1;">
+            <video src="assets/independence.mp4#t=1" muted playsinline loop autoplay style="z-index: 1;"></video>
             <div class="hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; color:var(--signal); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; z-index:2; border-radius:6px;">
               <span>CLICK TO PLAY</span>
             </div>
