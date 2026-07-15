@@ -871,6 +871,21 @@
     transform: rotateY(0deg);
     opacity: 1;
   }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  }
+  .carousel-arrow {
+    border: 1px solid rgba(255,255,255,0.4);
+    animation: pulse-ring 2s infinite cubic-bezier(0.2, 1, 0.3, 1);
+  }
+  .carousel-arrow:hover {
+    background: var(--signal) !important;
+    color: var(--paper) !important;
+    border-color: var(--signal) !important;
+    animation: none;
+  }
 </style>
 </head>
 <body class="no-scroll">
@@ -895,6 +910,8 @@
     <li data-target="#contact-sec"><span class="dot"></span><span class="label">Contact</span></li>
   </ul>
 </nav>
+
+
 
 <!-- ============ INTRO SCROLL ORCHESTRATOR ============ -->
 <div id="intro-orchestrator">
@@ -1087,7 +1104,7 @@
           <div class="c-slide-text">
             <div class="c-tag">FMCG Campaign</div>
             <h3 class="c-title">INDEPENDENCE</h3>
-            <p class="c-desc">Festive, youth-facing campaign concepting plus a dedicated Independence Day advertisement — dozens of AI-generated tonal variations, narrowed with the brand team.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Festive, youth-facing campaign concepting plus a dedicated advertisement for Independence Poha— dozens of AI-generated tonal variations, narrowed with the brand team.<br><br><strong>Scope:</strong> 30+ AI-generated visual variations, ads delivered</p>
             <div class="c-foot"><span class="chip">Campaign concepting</span></div>
           </div>
         </div>
@@ -1108,9 +1125,9 @@
           </div>
           <div class="c-slide-text-placeholder">Celebrity Work</div>
           <div class="c-slide-text">
-            <div class="c-tag">Skincare / Positioning</div>
+            <div class="c-tag">Celebrity Branding / Positioning</div>
             <h3 class="c-title">CELEBRITY WORK</h3>
-            <p class="c-desc">Brand positioning and presentation — where the brand sits, what it should look like, and a campaign plan to get there.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Strategic brand positioning and presentation for high-profile celebrity content. Defined brand identity, visual language, and the overall campaign roadmap.<br><br><strong>Scope:</strong> Full brand positioning deck, visual identity system, campaign direction</p>
             <div class="c-foot"><span class="chip">Positioning</span><span class="chip">Deck</span></div>
           </div>
         </div>
@@ -1130,9 +1147,9 @@
           </div>
           <div class="c-slide-text-placeholder">Other Brand Works</div>
           <div class="c-slide-text">
-            <div class="c-tag">Brand Works</div>
+            <div class="c-tag">Presentation / Positioning</div>
             <h3 class="c-title">OTHER BRAND WORKS</h3>
-            <p class="c-desc">Various promotional content and brand work across different media.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Brand positioning and presentation — where the brand sits, what it should look like, and a campaign plan to get there.</p>
             <div class="c-foot"><span class="chip">Promotion</span><span class="chip">Social</span></div>
           </div>
         </div>
@@ -1157,7 +1174,7 @@
           <div class="c-slide-text">
             <div class="c-tag">Concepts / Pitching</div>
             <h3 class="c-title">PROACTIVE / PITCH WORK</h3>
-            <p class="c-desc">Exploratory visual concepts, generative stage designs, and speculative campaigns created for pitches and internal reviews.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Exploratory visual concepts, generative stage designs, and speculative campaigns created for pitches and internal reviews.<br><br><strong>Output:</strong> Exploratory concepts across 4+ pitches including Aeroplane Rice rebrand and stage design</p>
             <div class="c-foot"><span class="chip">Pitch</span><span class="chip">Concepts</span></div>
           </div>
         </div>
@@ -1174,7 +1191,7 @@
           <div class="c-slide-text">
             <div class="c-tag">Live Production</div>
             <h3 class="c-title">MUSIC VIDEO</h3>
-            <p class="c-desc">Produced and publicly released, with hands-on involvement from pre-production planning through the on-set shoot to post-production edit.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Produced and publicly released, with hands-on involvement from pre-production planning through the on-set shoot to post-production edit.<br><br><strong>Scope:</strong> End-to-end — pre-production through public release</p>
             <div class="c-foot"><span class="chip">On-set</span><span class="chip">Edit</span></div>
           </div>
         </div>
@@ -1193,7 +1210,7 @@
           <div class="c-slide-text">
             <div class="c-tag">R&amp;D / Pipeline</div>
             <h3 class="c-title">AI VFX &amp; GREEN-SCREEN</h3>
-            <p class="c-desc">Evaluated generative pipelines for background replacement and compositing — strong on simple fixes, inconsistent on complex lighting and edge work. Findings documented for the wider team.<br><br><strong>Scope:</strong> [ADD METRIC]</p>
+            <p class="c-desc">Evaluated generative pipelines for background replacement and compositing — strong on simple fixes, inconsistent on complex lighting and edge work. Findings documented for the wider team.<br><br><strong>Finding:</strong> Effective for simple background replacement; inconsistent on complex lighting and edge cases</p>
             <div class="c-foot"><span class="chip">Compositing</span><span class="chip">Documentation</span></div>
           </div>
         </div>
@@ -1246,7 +1263,19 @@
 </section>
 
 <!-- ============ ANANDAM SPOTLIGHT ============ -->
-<section class="sec" id="spotlight-sec">
+<div id="anandam-pin-orchestrator" style="position: relative; background: var(--bg);">
+  <div style="position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+    <div id="anandam-bg-video" style="position: absolute; inset: 0; z-index: 0; background: #000;">
+       <video id="anandam-carousel-video" src="assets/anandam/Seedance 2_0 - Use the reference image as the exact visual source_ Preserve the original composition.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;"></video>
+    </div>
+    <div id="carousel-controls" style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 16px;">
+      <div class="carousel-arrow" id="carousel-prev" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); pointer-events: none; opacity: 0; transition: all 0.3s ease; cursor: pointer; color: var(--paper);">←</div>
+      <div class="carousel-arrow" id="carousel-next" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); pointer-events: none; opacity: 0; transition: all 0.3s ease; cursor: pointer; color: var(--paper);">→</div>
+    </div>
+    
+    <div id="anandam-content" style="position: relative; z-index: 1; width: 100%; height: 100%; overflow-y: auto;">
+       <!-- ============ ANANDAM SPOTLIGHT CONTENT ============ -->
+       <section class="sec" id="spotlight-sec" style="background: transparent;">
   <div class="wrap">
     <div class="spotlight">
       <div class="spot-grid">
@@ -1257,7 +1286,7 @@
               <h2 style="margin:0;">ANANDAM</h2>
             </div>
           </div>
-          <p>A large-scale Bhakti devotional concert, co-produced by Jio Creative Labs. For the final two months of the internship, Swayam independently led the AI-assisted visual and stage direction — the single largest creative deliverable of the internship, and the one that pulled together everything learned before it.</p>
+          <p>A large-scale Bhakti devotional concert, co-produced by Jio Creative Labs. For the final two months of the internship, I have led the AI-assisted visual and stage direction — the single largest creative deliverable of the internship, and the one that pulled together everything learned before it.</p>
           <p>This wasn't a commercial brief. A devotional, culturally-rooted event needed a different kind of care — generated concepts were tested, revised, and re-tested against the tone and spirituality of the occasion, not just against what looked good.</p>
           <div style="display:flex; margin-top:32px;">
             <div class="spotlight-status">EXECUTED — LIVE EVENT</div>
@@ -1277,30 +1306,11 @@
   </div>
 </section>
 
-<!-- ============ LIGHTBOX ============ -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-close" id="lightboxClose">CLOSE ✕</div>
-  <div class="lightbox-nav lightbox-prev" id="lightboxPrev" style="display:none;">←</div>
-  <div class="lightbox-nav lightbox-next" id="lightboxNext" style="display:none;">→</div>
-  <video id="lightboxVideo" src="" controls style="display:none;"></video>
-  <img id="lightboxImg" src="" style="display:none;">
-  
-  <div id="lightboxCompare" style="display:none; position:relative; width:90vw; max-width:calc(90vh * 9 / 16); aspect-ratio:9/16; overflow:hidden; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
-    <!-- After video is base layer (bottom) -->
-    <video id="compareAfter" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>
-    
-    <!-- Before video sits on top -->
-    <video id="compareBefore" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; clip-path:inset(0 50% 0 0); -webkit-clip-path:inset(0 50% 0 0);"></video>
-    
-    <div id="compareLine" style="position:absolute; top:0; bottom:0; left:50%; width:2px; background:var(--signal); transform:translateX(-50%); pointer-events:none; display:flex; align-items:center; justify-content:center;">
-       <div style="width:30px; height:30px; background:var(--signal); border-radius:50%; color:var(--bg); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold;">↔</div>
-    </div>
-    
-    <input type="range" id="compareSlider" min="0" max="100" value="50" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; opacity:0; cursor:ew-resize;">
-  </div>
-</div>
-
-
+<!-- lightbox moved to end of body -->
+    </div> <!-- end anandam-content -->
+  </div> <!-- end sticky -->
+  <div id="anandam-freeze-spacer" style="height: 150vh;"></div>
+</div> <!-- end orchestrator -->
 <!-- ============ TOOLS MARQUEE ============ -->
 <div class="marquee-wrap">
   <div class="marquee mono" id="marquee">
@@ -1361,6 +1371,15 @@
       <h2 class="sec-title">EVERYTHING ELSE <em>WORTH SHOWING.</em></h2>
     </div>
     <div class="work-grid" style="grid-template-columns:1fr;">
+      <div class="work-card" style="min-height:auto;">
+        <div>
+          <img src="assets/aqi-project.png" alt="Air Quality Analytics and Forecasting" onerror="this.style.display='none'" style="width:100%; height:auto; max-height:400px; object-fit:cover; margin-bottom:24px; border-radius:4px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+          <div class="work-tag">DATA / ML</div>
+          <h3>AIR QUALITY ANALYTICS AND FORECASTING</h3>
+          <p>Two-part project on Indian city AQI data. First, a Power BI dashboard processing daily pollutant readings across PM2.5, PM10, NO2, SO2, CO, and O3 — cleaning, CPCB-aligned AQI categorisation, DAX measures, k-means city clustering by pollutant profile, and KPI outputs for average AQI and percentage of unhealthy days. Second, a feed-forward ANN trained on the same pollutant and meteorological data to forecast daily AQI, using backpropagation with Levenberg-Marquardt optimiser — R of 0.99 on test set, RMSE of 9.7, seasonal variation captured including winter spikes and monsoon dips.</p>
+        </div>
+        <div class="work-foot"><span class="chip">Power BI</span><span class="chip">DAX</span><span class="chip">K-Means</span><span class="chip">ANN</span><span class="chip">Forecasting</span><span class="chip">CPCB Data</span></div>
+      </div>
       <div class="work-card" style="min-height:auto;">
         <div>
           <div class="work-tag">May — Jul 2025 · Siemens Mobility, Kalwa Works</div>
@@ -1425,6 +1444,29 @@
     </div>
   </div>
 </footer>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lightboxClose">CLOSE ✕</div>
+  <div class="lightbox-nav lightbox-prev" id="lightboxPrev" style="display:none;">←</div>
+  <div class="lightbox-nav lightbox-next" id="lightboxNext" style="display:none;">→</div>
+  <video id="lightboxVideo" src="" controls style="display:none;"></video>
+  <img id="lightboxImg" src="" style="display:none;">
+  
+  <div id="lightboxCompare" style="display:none; position:relative; width:90vw; max-width:calc(90vh * 9 / 16); aspect-ratio:9/16; overflow:hidden; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <!-- After video is base layer (bottom) -->
+    <video id="compareAfter" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>
+    
+    <!-- Before video sits on top -->
+    <video id="compareBefore" src="" muted playsinline loop style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; clip-path:inset(0 50% 0 0); -webkit-clip-path:inset(0 50% 0 0);"></video>
+    
+    <div id="compareLine" style="position:absolute; top:0; bottom:0; left:50%; width:2px; background:var(--signal); transform:translateX(-50%); pointer-events:none; display:flex; align-items:center; justify-content:center;">
+       <div style="width:30px; height:30px; background:var(--signal); border-radius:50%; color:var(--bg); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold;">↔</div>
+    </div>
+    
+    <input type="range" id="compareSlider" min="0" max="100" value="50" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; opacity:0; cursor:ew-resize;">
+  </div>
+</div>
 
 <script>
   // progress bar
@@ -2228,6 +2270,114 @@
     });
     
     updateCarouselUI();
+  })();
+
+  // ============ ANANDAM BACKGROUND CAROUSEL ============
+  (function(){
+    const orchestrator = document.getElementById('anandam-pin-orchestrator');
+    const content = document.getElementById('anandam-content');
+    const bgVideo = document.getElementById('anandam-bg-video');
+    const videoEl = document.getElementById('anandam-carousel-video');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+
+    if(!orchestrator || !content || !bgVideo) return;
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const rect = orchestrator.getBoundingClientRect();
+        
+        if (rect.top <= 0) {
+          let scrollPast = -rect.top;
+          let fadeProgress = scrollPast / (window.innerHeight * 0.5);
+          if (fadeProgress > 1) fadeProgress = 1;
+          if (fadeProgress < 0) fadeProgress = 0;
+          
+          content.style.opacity = 1 - fadeProgress;
+          content.style.pointerEvents = fadeProgress === 1 ? 'none' : 'auto';
+          videoEl.style.opacity = 0.3 + (0.7 * fadeProgress);
+          
+          if (fadeProgress > 0.5) {
+             prevBtn.style.opacity = 1;
+             nextBtn.style.opacity = 1;
+             prevBtn.style.pointerEvents = 'auto';
+             nextBtn.style.pointerEvents = 'auto';
+          } else {
+             prevBtn.style.opacity = 0;
+             nextBtn.style.opacity = 0;
+             prevBtn.style.pointerEvents = 'none';
+             nextBtn.style.pointerEvents = 'none';
+          }
+        } else {
+          content.style.opacity = 1;
+          content.style.pointerEvents = 'auto';
+          videoEl.style.opacity = 0.3;
+          prevBtn.style.opacity = 0;
+          nextBtn.style.opacity = 0;
+          prevBtn.style.pointerEvents = 'none';
+          nextBtn.style.pointerEvents = 'none';
+        }
+        
+        ticking = false;
+      });
+    }, { passive: true });
+
+    // CAROUSEL LOGIC
+    const videos = [
+      "Seedance 2_0 - Use the reference image as the exact visual source_ Preserve the original composition.mp4",
+      "WhatsApp Video 2026-06-08 at 4.51.09 PM.mp4",
+      "download (21).mp4",
+      "magnific_a-cinematic-psychedelic-fast-paced-animtion-shot-t_seedance_720p_16-9_24fps_46913.mp4",
+      "magnific_a-cinematic-psychedelic-fast-paced-animtion-shot-t_seedance_720p_16-9_24fps_46919.mp4",
+      "magnific_maintain-the-black-letter_gJFIlsPSXO.mp4",
+      "magnific_maintain-the-black-letter_swu8i6Ml8e.mp4",
+      "magnific_nandi-bows-down-and-rapid_l7uX0T6gv9.mp4",
+      "magnific_set-within-the-exact-framing-preserve-the-black-le_seedance_720p_16-9_24fps_46924.mp4",
+      "magnific_static-camera-cinematic-s_1svvdLmr4r.mp4",
+      "magnific_static-camera-petals-fall_wP5uUZJ7EI.mp4",
+      "magnific_the-camera-arcs-and-moves_rla7ywWxtc.mp4",
+      "magnific_the-camera-flys-into-the-eye-of-the-storm-and-reve_kling_720p_16-9_24fps_1539.mp4",
+      "magnific_the-camera-smoothly-tilts_MX3NlRXDCm.mp4",
+      "magnific_the-camera-spins-clockwis_9RxtZ3iNYZ.mp4",
+      "magnific_the-camera-tracks-the-dam_vuTSCCWa47.mp4"
+    ];
+    let currentIdx = 0;
+
+    const playVideo = () => {
+      videoEl.src = "assets/anandam/" + videos[currentIdx];
+      videoEl.play().catch(e => console.log("Autoplay prevented:", e));
+    };
+
+    prevBtn.addEventListener('click', () => {
+      currentIdx = (currentIdx - 1 + videos.length) % videos.length;
+      playVideo();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIdx = (currentIdx + 1) % videos.length;
+      playVideo();
+    });
+
+    let touchStartX = 0;
+    orchestrator.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+    
+    orchestrator.addEventListener('touchend', (e) => {
+      let touchEndX = e.changedTouches[0].screenX;
+      if (parseFloat(content.style.opacity) < 0.5) {
+        if (touchEndX < touchStartX - 50) {
+          currentIdx = (currentIdx + 1) % videos.length;
+          playVideo();
+        } else if (touchEndX > touchStartX + 50) {
+          currentIdx = (currentIdx - 1 + videos.length) % videos.length;
+          playVideo();
+        }
+      }
+    }, {passive: true});
   })();
 </script>
 </body>
